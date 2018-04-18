@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <!-- Image of a place - if available. Else use default image
+          taketn from material.io -->
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:layout_margin="6dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_image_black_48dp" />
+        <!-- title, address, part of description -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <TextView
+                android:id="@+id/list_item_txt_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="Lorem ipsum dolor sit amet, consect" />
+
+            <TextView
+                android:id="@+id/list_item_txt_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                tools:text="Lorem ipsum dolor sit amet, consectetuer adip" />
+
+            <TextView
+                android:id="@+id/list_item_txt_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="14sp"
+                tools:text="Lorem ipsum dolor sit amet, consectetuer a..." />
+
+        </LinearLayout>
+    </LinearLayout>
+<!-- layout for child-friendly, pets allowed icons + working time/event date -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="6dp">
+
+        <ImageView
+            android:id="@+id/list_item_icon_child_friendly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/backgroud_circle"
+            android:src="@drawable/ic_child_friendly_black_24dp" />
+
+        <ImageView
+            android:id="@+id/list_item_icon_pets_allowed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@drawable/backgroud_circle"
+            android:src="@drawable/ic_pets_black_24dp" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_icon_time"
+            android:layout_marginLeft="6dp"
+
+            android:src="@drawable/ic_query_builder_black_24dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_txt_datetime"
+            tools:text="Lorem ipsum dolor sit ame"
+            android:paddingLeft="6dp"
+            android:layout_gravity="center_vertical"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_navigate_next_black_24dp"/>
+    </LinearLayout>
+
+    <!-- title, address, part of description -->
+
+</LinearLayout>
