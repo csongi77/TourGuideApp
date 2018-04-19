@@ -13,6 +13,21 @@ public class Place implements Entity, Parcelable {
     private Bitmap mImage,mIconImage;
 
     // default constructor
+
+    /**
+     *
+     * @param id
+     * @param categoryId
+     * @param title
+     * @param address
+     * @param fromTo
+     * @param description
+     * @param childFriendly
+     * @param petAllowed
+     * @param pictureAvailable
+     * @param defaultImage
+     * @param defaultIconImage
+     */
     public Place(int id, int categoryId, String title, String address, String fromTo, String description,
                  boolean childFriendly, boolean petAllowed, boolean pictureAvailable,
                  Bitmap defaultImage, Bitmap defaultIconImage){
