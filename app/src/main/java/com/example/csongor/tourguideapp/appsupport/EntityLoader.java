@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.example.csongor.tourguideapp.BundleArgs;
+import com.example.csongor.tourguideapp.BundleStringArgs;
 import com.example.csongor.tourguideapp.R;
 
 import org.json.JSONArray;
@@ -40,9 +42,9 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
     private @BundleArgs int mCategoryId;
 
 
-    public EntityLoader(@NonNull Context context, @BundleArgs int categoryId) {
+    public EntityLoader(@NonNull Context context, @NonNull Bundle args) {
         super(context);
-        mCategoryId=categoryId;
+        mCategoryId=args.getInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG);
     }
 
     /**
