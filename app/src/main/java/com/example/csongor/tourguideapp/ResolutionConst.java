@@ -5,16 +5,16 @@ import android.support.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static com.example.csongor.tourguideapp.ResolutionAnn.HDPI;
-import static com.example.csongor.tourguideapp.ResolutionAnn.LDPI;
-import static com.example.csongor.tourguideapp.ResolutionAnn.MDPI;
-import static com.example.csongor.tourguideapp.ResolutionAnn.XHDPI;
-import static com.example.csongor.tourguideapp.ResolutionAnn.XXHDPI;
-import static com.example.csongor.tourguideapp.ResolutionAnn.XXXHDPI;
+import static com.example.csongor.tourguideapp.ResolutionConst.HDPI;
+import static com.example.csongor.tourguideapp.ResolutionConst.LDPI;
+import static com.example.csongor.tourguideapp.ResolutionConst.MDPI;
+import static com.example.csongor.tourguideapp.ResolutionConst.XHDPI;
+import static com.example.csongor.tourguideapp.ResolutionConst.XXHDPI;
+import static com.example.csongor.tourguideapp.ResolutionConst.XXXHDPI;
 
 @Retention(RetentionPolicy.SOURCE)
 @StringDef({LDPI, MDPI, HDPI, XHDPI, XXHDPI, XXXHDPI})
-public @interface ResolutionAnn {
+public @interface ResolutionConst {
     public static final String LDPI = "ldpi";
     public static final String MDPI = "mdpi";
     public static final String HDPI = "hdpi";

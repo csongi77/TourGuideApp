@@ -1,5 +1,6 @@
 package com.example.csongor.tourguideapp;
 
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -7,6 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,8 +29,11 @@ public class MainActivity extends AppCompatActivity
      * These values will be passed to AsyncTaskLoader object for retrieving appropriate images and
      * icons via RESTful service.
      */
-    private @ResolutionAnn
+    private @ResolutionConst
     String mResolution;
+    private FragmentManager mFragmentManager;
+    private FragmentTransaction mFragmentTransaction;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +57,11 @@ public class MainActivity extends AppCompatActivity
         if (!(networkInfo != null && networkInfo.isConnectedOrConnecting()))
             Snackbar.make(findViewById(R.id.coordinator_root_layout), R.string.not_connected, Snackbar.LENGTH_INDEFINITE).show();
 
-        /* Check and assign device resolution for retrieving correct images and icons. */
+        /* Check and assign device resolution for retrieving correct images and icons at fragments. */
+        // todo move it into the fragment
         mResolution = getResolutionString();
-
+        // initializing FragmentManager
+        mFragmentManager = MainActivity.this.getSupportFragmentManager();
 
     }
 
@@ -94,19 +103,23 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        // todo: on click start new fragment to load
+        // todo: rename Resources
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+
+            mFragmentTransaction=mFragmentManager.beginTransaction();
+            Fragment historicalPlacesFragment=new ListFragmentToDisplay();
+            Bundle toPut=new Bundle();
+            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
+            historicalPlacesFragment.setArguments(toPut);
+            mFragmentTransaction.add(R.id.fragment_container,historicalPlacesFragment);
+            mFragmentTransaction.addToBackStack(null);
+            mFragmentTransaction.commit();
         } else if (id == R.id.nav_gallery) {
-
+// todo: on click start new fragment to load
         } else if (id == R.id.nav_slideshow) {
-
+// todo: on click start new fragment to load
         } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+// todo: on click start new fragment to load
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -120,29 +133,29 @@ public class MainActivity extends AppCompatActivity
      * @return ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi
      */
     private @NonNull
-    @ResolutionAnn
+    @ResolutionConst
     String getResolutionString() {
         DisplayMetrics mDisplayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
         switch (mDisplayMetrics.densityDpi) {
             case DisplayMetrics.DENSITY_LOW:
-                return ResolutionAnn.LDPI;
+                return ResolutionConst.LDPI;
             case DisplayMetrics.DENSITY_MEDIUM:
-                return ResolutionAnn.MDPI;
+                return ResolutionConst.MDPI;
             case DisplayMetrics.DENSITY_HIGH:
-                return ResolutionAnn.HDPI;
+                return ResolutionConst.HDPI;
             case DisplayMetrics.DENSITY_XHIGH:
-                return ResolutionAnn.XHDPI;
+                return ResolutionConst.XHDPI;
             case DisplayMetrics.DENSITY_XXHIGH:
-                return ResolutionAnn.XXHDPI;
+                return ResolutionConst.XXHDPI;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                return ResolutionAnn.XXXHDPI;
+                return ResolutionConst.XXXHDPI;
             default:
                 if (mDisplayMetrics.densityDpi == DisplayMetrics.DENSITY_560) {
-                    return ResolutionAnn.XXHDPI;
+                    return ResolutionConst.XXHDPI;
                 } else if (mDisplayMetrics.densityDpi <= DisplayMetrics.DENSITY_420) {
-                    return ResolutionAnn.XHDPI;
-                } else return ResolutionAnn.HDPI;
+                    return ResolutionConst.XHDPI;
+                } else return ResolutionConst.HDPI;
         }
 
     }
