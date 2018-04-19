@@ -16,7 +16,7 @@ public interface Entity extends Parcelable {
      *
      * @return - the Id of Entity
      */
-    int getmId();
+    int getId();
 
     /**
      * The category Id is required for ArrayAdapter objects. The icon of @+id/list_item_icon_time

@@ -4,34 +4,55 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class NullPlace implements Entity, Parcelable {
-
-    private  int mId;
+public class Place implements Entity, Parcelable {
+    // Field declarations
+    private int mId;
     private int mCategoryId;
+    private String mTitle, mAddress,mFromTo, mDescription;
+    private boolean mChildFriendly, mPetAllowed,mPictureAvailable;
+    private Bitmap mImage,mIconImage;
 
-
-    /**
-     * Default constructor of NullPlace
-     */
-    public NullPlace() {
-        mId=-1;
-        mCategoryId =-1;
+    // default constructor
+    public Place(int id, int categoryId, String title, String address, String fromTo, String description,
+                 boolean childFriendly, boolean petAllowed, boolean pictureAvailable,
+                 Bitmap defaultImage, Bitmap defaultIconImage){
+        mId=id;
+        mCategoryId=categoryId;
+        mTitle=title;
+        mAddress=address;
+        mFromTo=fromTo;
+        mDescription=description;
+        mChildFriendly=childFriendly;
+        mPetAllowed=petAllowed;
+        mPictureAvailable=pictureAvailable;
+        mImage=defaultImage;
+        mIconImage=defaultIconImage;
     }
 
-    protected NullPlace(Parcel in) {
+    // default Parcel implementation
+    protected Place(Parcel in) {
         mId = in.readInt();
         mCategoryId = in.readInt();
+        mTitle = in.readString();
+        mAddress = in.readString();
+        mFromTo = in.readString();
+        mDescription = in.readString();
+        mChildFriendly = in.readByte() != 0;
+        mPetAllowed = in.readByte() != 0;
+        mPictureAvailable = in.readByte() != 0;
+        mImage = in.readParcelable(Bitmap.class.getClassLoader());
+        mIconImage = in.readParcelable(Bitmap.class.getClassLoader());
     }
 
-    public static final Creator<NullPlace> CREATOR = new Creator<NullPlace>() {
+    public static final Creator<Place> CREATOR = new Creator<Place>() {
         @Override
-        public NullPlace createFromParcel(Parcel in) {
-            return new NullPlace(in);
+        public Place createFromParcel(Parcel in) {
+            return new Place(in);
         }
 
         @Override
-        public NullPlace[] newArray(int size) {
-            return new NullPlace[size];
+        public Place[] newArray(int size) {
+            return new Place[size];
         }
     };
 
@@ -60,17 +81,17 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public int getCategoryId() {
-        return -1;
+        return mCategoryId;
     }
 
     /**
-     * Name/title of Place, Event
+     * Name/mTitle of Place, Event
      *
-     * @return - the name/title String of Entity
+     * @return - the name/mTitle String of Entity
      */
     @Override
     public String getTitle() {
-        return "";
+        return mTitle;
     }
 
     /**
@@ -80,7 +101,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public String getAddress() {
-        return "";
+        return mAddress;
     }
 
     /**
@@ -91,7 +112,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public String getFromTo() {
-        return "N/A";
+        return mFromTo;
     }
 
     /**
@@ -101,7 +122,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public boolean isChildFriendly() {
-        return false;
+        return mChildFriendly;
     }
 
     /**
@@ -111,7 +132,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public boolean isPetAllowed() {
-        return false;
+        return mPetAllowed;
     }
 
     /**
@@ -121,7 +142,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public String getDescription() {
-        return "N/A";
+        return mDescription;
     }
 
     /**
@@ -133,7 +154,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public boolean isPictureAvialable() {
-        return false;
+        return mPictureAvailable;
     }
 
     /**
@@ -146,7 +167,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public Bitmap getImage() {
-        return null;
+        return mImage;
     }
 
     /**
@@ -156,6 +177,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public void setImage(Bitmap image) {
+        mImage=image;
     }
 
     /**
@@ -168,7 +190,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public Bitmap getIconImage() {
-        return null;
+        return mIconImage;
     }
 
     /**
@@ -178,20 +200,26 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public void setIconImage(Bitmap icon) {
+        mIconImage=icon;
     }
 
+    /**
+     * Overriding hashCode and equals methods. Since mId of Place is unique index key in
+     * database, it's enough to check it in equals method.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        NullPlace nullPlace = (NullPlace) o;
-        return mId == nullPlace.mId;
+
+        Place place = (Place) o;
+
+        return mId == place.mId;
     }
 
     @Override
     public int hashCode() {
-
-        return mId*31;
+        return mId;
     }
 
 
@@ -221,5 +249,14 @@ public class NullPlace implements Entity, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mId);
         dest.writeInt(mCategoryId);
+        dest.writeString(mTitle);
+        dest.writeString(mAddress);
+        dest.writeString(mFromTo);
+        dest.writeString(mDescription);
+        dest.writeByte((byte) (mChildFriendly ? 1 : 0));
+        dest.writeByte((byte) (mPetAllowed ? 1 : 0));
+        dest.writeByte((byte) (mPictureAvailable ? 1 : 0));
+        dest.writeParcelable(mImage, flags);
+        dest.writeParcelable(mIconImage, flags);
     }
 }
