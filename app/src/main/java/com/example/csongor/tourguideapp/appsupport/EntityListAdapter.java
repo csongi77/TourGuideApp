@@ -21,21 +21,21 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
      * Constructor
      *
      * @param context  The current context.
-     * @param resource The resource ID for a layout file containing a TextView to use when
-     *                 instantiating views.
      * @param entities  The objects to represent in the ListView.
      */
-    public EntityListAdapter(@NonNull Context context, int resource, @NonNull List<Entity> entities) {
-        super(context, resource, entities);
+    public EntityListAdapter(@NonNull Context context,  @NonNull List<Entity> entities) {
+        super(context, R.layout.fragment_list_container, entities);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // inflate appropriate view if it's not initialized yet
+        mRootView=convertView;
         if(mRootView==null) {
-            LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
-            mRootView = inflater.inflate(R.layout.list_item, parent, false);
+           /* LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
+            mRootView = inflater.inflate(R.layout.list_item, parent, false);*/
+           mRootView=LayoutInflater.from(getContext()).inflate(R.layout.list_item,parent,false);
         }
         Entity place=getItem(position);
         // assigning Entity's values to appropriate TextViews
@@ -44,10 +44,10 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
         TextView address=mRootView.findViewById(R.id.list_item_txt_address);
         address.setText(place.getAddress());
         TextView description=mRootView.findViewById(R.id.list_item_txt_description);
-        // cut Entities description to maximum 42 chars.
-        if(place.getDescription().length()>45){
+        // cut Entities description to maximum 40 chars.
+        if(place.getDescription().length()>43){
             StringBuilder builder=new StringBuilder();
-            builder.append(place.getDescription().substring(0,42))
+            builder.append(place.getDescription().substring(0,40))
                     .append("...");
             description.setText(builder.toString());
         } else {

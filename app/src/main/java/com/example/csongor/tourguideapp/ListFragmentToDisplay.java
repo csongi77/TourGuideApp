@@ -6,9 +6,11 @@ import android.content.CursorLoader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -17,11 +19,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
+import android.widget.ListView;
 
 import com.example.csongor.tourguideapp.appsupport.Entity;
+import com.example.csongor.tourguideapp.appsupport.EntityListAdapter;
 import com.example.csongor.tourguideapp.appsupport.EntityLoader;
+import com.example.csongor.tourguideapp.appsupport.NullPlace;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,25 +37,27 @@ import java.util.List;
 public class ListFragmentToDisplay extends Fragment {
 
     // Defining constants
-    private static final String LOG_TAG=ListFragmentToDisplay.class.getSimpleName();
-    private static final int ENTITY_LOADER=42;
+    private static final String LOG_TAG = ListFragmentToDisplay.class.getSimpleName();
+    private static final int ENTITY_LOADER = 42;
     // Defining variables
     private ContentLoadingProgressBar mProgressBar;
-    private View mListView;
+    private ListView mListView;
     /**
      * The mBundleLoadArg contains the required categoryId which was passed by NavigationDrawer
      * For possible values check @link{@BundleArgs}
      */
     private Bundle mBundleLoadArg;
-    private @BundleArgs int mLoadArg;
+    private @BundleArgs
+    int mLoadArg;
     private LoaderManager mLoaderManager;
-    private AsyncTaskLoader<List<Entity>> mEntityLoader;
+    private Loader<List<Entity>> mEntityLoader;
     private LoaderManager.LoaderCallbacks<List<Entity>> mEntityListLoaderCallback;
-
+    private ArrayAdapter<Entity> mArrayAdapter;
     private List<Entity> mEntityList;
 
 
     public ListFragmentToDisplay() {
+        mEntityLoader = null;
         // Required empty public constructor
     }
 
@@ -56,14 +65,14 @@ public class ListFragmentToDisplay extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View mRootView = inflater.inflate(R.layout.fragment_list_container,container,false);
+        View mRootView = inflater.inflate(R.layout.fragment_list_container, container, false);
         // initializing variables
         mListView = mRootView.findViewById(R.id.list_view_container);
-        mProgressBar=mRootView.findViewById(R.id.list_view_loading_progress_bar);
+        mProgressBar = mRootView.findViewById(R.id.list_view_loading_progress_bar);
 
         // retrieving Bundle args
         mBundleLoadArg = getArguments();
-
+        Log.d(LOG_TAG, "---> mBundleLoadArg: " + mBundleLoadArg.getInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG));
 /* todo put it in EntityLoaderCallback
         mProgressBar.setVisibility(View.GONE);
         mProgressBar.hide();
@@ -77,31 +86,54 @@ public class ListFragmentToDisplay extends Fragment {
             @NonNull
             @Override
             public Loader<List<Entity>> onCreateLoader(int id, Bundle args) {
+                Log.d(LOG_TAG, "---> onCreateLoader");
                 // set up EntityLoader. args contains categoryId.
-                if(mEntityLoader==null){
-                    mEntityLoader=new EntityLoader(getContext(), args);
+                if (mEntityLoader == null) {
+                    mEntityLoader = new EntityLoader(getContext(), args);
                 }
                 return mEntityLoader;
             }
 
             @Override
             public void onLoadFinished(@NonNull Loader<List<Entity>> loader, List<Entity> data) {
-
+                Log.d(LOG_TAG, "---> onLoadFinished");
+                if (mEntityList == null) {
+                    // if (!(data.get(0) instanceof NullPlace)) {
+                    mEntityList = data;
+                    mArrayAdapter = new EntityListAdapter(getContext(), mEntityList);
+                    mListView.setAdapter(mArrayAdapter);
+                    mListView.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    mLoaderManager.destroyLoader(ENTITY_LOADER);
+                    //  }
+                } else {
+                    mEntityList.clear();
+                    mEntityList.addAll(data);
+                    mArrayAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onLoaderReset(@NonNull Loader<List<Entity>> loader) {
-
+                Log.d(LOG_TAG, "---> onLoaderReset");
+                mEntityList = null;
+                mProgressBar.setVisibility(View.VISIBLE);
+                mListView.setVisibility(View.GONE);
+                mEntityLoader.abandon();
+                mEntityLoader = null;
+                mLoaderManager.destroyLoader(ENTITY_LOADER);
             }
+        };
+
+        if (mEntityList == null) {
+        mLoaderManager = getActivity().getSupportLoaderManager();
+        mEntityLoader = mLoaderManager.initLoader(ENTITY_LOADER, mBundleLoadArg, mEntityListLoaderCallback);
+            mEntityLoader.forceLoad();
         }
-
-        mLoaderManager=getActivity().getSupportLoaderManager();
-        mEntityLoader=mLoaderManager.initLoader(ENTITY_LOADER, mBundleLoadArg, mEntityListLoaderCallback);
-        mEntityLoader.forceLoad();
-
         return mRootView;
-
+//mBundleLoadArg.getInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG)
     }
+
 
 
     //todo check the List,

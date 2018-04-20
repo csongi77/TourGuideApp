@@ -105,21 +105,37 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         // todo: rename Resources
         if (id == R.id.nav_camera) {
-
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             Bundle toPut=new Bundle();
             toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
             historicalPlacesFragment.setArguments(toPut);
-            mFragmentTransaction.add(R.id.fragment_container,historicalPlacesFragment);
-            mFragmentTransaction.addToBackStack(null);
+            mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.nav_gallery) {
-// todo: on click start new fragment to load
+            mFragmentTransaction=mFragmentManager.beginTransaction();
+            Fragment historicalPlacesFragment=new ListFragmentToDisplay();
+            Bundle toPut=new Bundle();
+            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.EVENTS);
+            historicalPlacesFragment.setArguments(toPut);
+            mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
+            mFragmentTransaction.commit();
         } else if (id == R.id.nav_slideshow) {
-// todo: on click start new fragment to load
+            mFragmentTransaction=mFragmentManager.beginTransaction();
+            Fragment historicalPlacesFragment=new ListFragmentToDisplay();
+            Bundle toPut=new Bundle();
+            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.SPORTS);
+            historicalPlacesFragment.setArguments(toPut);
+            mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
+            mFragmentTransaction.commit();
         } else if (id == R.id.nav_manage) {
-// todo: on click start new fragment to load
+            mFragmentTransaction=mFragmentManager.beginTransaction();
+            Fragment historicalPlacesFragment=new ListFragmentToDisplay();
+            Bundle toPut=new Bundle();
+            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.RESTAURANTS);
+            historicalPlacesFragment.setArguments(toPut);
+            mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
+            mFragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
