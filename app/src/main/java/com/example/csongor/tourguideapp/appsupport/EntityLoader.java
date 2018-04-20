@@ -79,7 +79,6 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
     @Nullable
     @Override
     public List<Entity> loadInBackground() {
-     //   if(mEntities ==null) {
             Log.d(LOG_TAG, "---> loadInBackgournd, mCategoryId: " + mCategoryId);
             //open connection and retrieve JSON string
             String jsonString = getJsonString(mCategoryId);
@@ -92,7 +91,6 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
              */
             mEntities = parseJsonString(jsonString);
             Log.d(LOG_TAG, "---> Returning entityList of a size of:" + mEntities.size());
-     //   }
         return mEntities;
     }
 
