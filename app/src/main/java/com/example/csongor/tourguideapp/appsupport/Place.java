@@ -9,7 +9,7 @@ public class Place implements Entity, Parcelable {
     private int mId;
     private int mCategoryId;
     private String mTitle, mAddress,mFromTo, mDescription;
-    private boolean mChildFriendly, mPetAllowed,mPictureAvailable;
+    private boolean mChildFriendly, mPetAllowed,mPictureAvailable,mPictureDownloaded;
     private Bitmap mImage,mIconImage;
 
     // default constructor
@@ -42,9 +42,11 @@ public class Place implements Entity, Parcelable {
         mPictureAvailable=pictureAvailable;
         mImage=defaultImage;
         mIconImage=defaultIconImage;
+        mPictureDownloaded=false;
     }
 
     // default Parcel implementation
+
     protected Place(Parcel in) {
         mId = in.readInt();
         mCategoryId = in.readInt();
@@ -55,6 +57,7 @@ public class Place implements Entity, Parcelable {
         mChildFriendly = in.readByte() != 0;
         mPetAllowed = in.readByte() != 0;
         mPictureAvailable = in.readByte() != 0;
+        mPictureDownloaded = in.readByte() != 0;
         mImage = in.readParcelable(Bitmap.class.getClassLoader());
         mIconImage = in.readParcelable(Bitmap.class.getClassLoader());
     }
@@ -219,6 +222,23 @@ public class Place implements Entity, Parcelable {
     }
 
     /**
+     * @param downloaded - set true if image has downloaded and set with AsyncTaskLoader
+     */
+    @Override
+    public void setPictureDownloaded(boolean downloaded) {
+        mPictureDownloaded=downloaded;
+    }
+
+    /**
+     * @return - has been assigned picture to Entity other than default image/icon?
+     */
+    @Override
+    public boolean hasPictureDownloaded() {
+        return mPictureDownloaded;
+    }
+
+
+    /**
      * Overriding hashCode and equals methods. Since mId of Place is unique index key in
      * database, it's enough to check it in equals method.
      */
@@ -271,6 +291,7 @@ public class Place implements Entity, Parcelable {
         dest.writeByte((byte) (mChildFriendly ? 1 : 0));
         dest.writeByte((byte) (mPetAllowed ? 1 : 0));
         dest.writeByte((byte) (mPictureAvailable ? 1 : 0));
+        dest.writeByte((byte) (mPictureDownloaded ? 1 : 0));
         dest.writeParcelable(mImage, flags);
         dest.writeParcelable(mIconImage, flags);
     }

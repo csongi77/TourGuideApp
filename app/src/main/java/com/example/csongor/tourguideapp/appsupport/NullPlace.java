@@ -70,7 +70,7 @@ public class NullPlace implements Entity, Parcelable {
      */
     @Override
     public String getTitle() {
-        return "";
+        return "NoTitle";
     }
 
     /**
@@ -179,6 +179,23 @@ public class NullPlace implements Entity, Parcelable {
     @Override
     public void setIconImage(Bitmap icon) {
     }
+
+    /**
+     * @param downloaded - set true if image has downloaded and set with AsyncTaskLoader
+     */
+    @Override
+    public void setPictureDownloaded(boolean downloaded) {
+
+    }
+
+    /**
+     * @return - has been assigned picture to Entity other than default image/icon?
+     */
+    @Override
+    public boolean hasPictureDownloaded() {
+        return false;
+    }
+
 
     @Override
     public boolean equals(Object o) {

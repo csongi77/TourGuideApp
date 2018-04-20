@@ -42,7 +42,6 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
      * Events, Sport places, Restaurants
       */
     private @BundleArgs int mCategoryId;
-    private List<Entity> mEntities;
 
 
     public EntityLoader(@NonNull Context context, @NonNull Bundle args) {
@@ -89,7 +88,7 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
              * parse json and create Entity. If there are no valid Entities, only a
              * List containing a single NullPlace Entity will returned.
              */
-            mEntities = parseJsonString(jsonString);
+        List<Entity> mEntities = parseJsonString(jsonString);
             Log.d(LOG_TAG, "---> Returning entityList of a size of:" + mEntities.size());
         return mEntities;
     }
@@ -168,13 +167,16 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
                 boolean pictureAvailable=entityObject.getBoolean("pictureAvailable");
                 Entity place=new Place(idPlace, categoryId, title, address, fromTo,description,childFriendly,dogsAllowed,pictureAvailable,defaultImage,defaultIcon );
                 placeList.add(place);
-                Log.d(LOG_TAG,"---> Entity created. Id: "+place.getId());
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "--->JSON parsing error");
             e.printStackTrace();
         }
         if(placeList.isEmpty())placeList.add(new NullPlace());
+        for (Entity e:placeList
+             ) {
+            Log.d(LOG_TAG,"entities to return: "+e.getTitle());
+        }
         return placeList;
     }
 }

@@ -105,4 +105,16 @@ public interface Entity extends Parcelable {
      * @param icon - image file in png/jpg
      */
     void setIconImage(Bitmap icon);
+
+    /**
+     *
+     * @param downloaded - set true if image has downloaded and set with AsyncTaskLoader
+     */
+    void setPictureDownloaded(boolean downloaded);
+
+    /**
+     *
+     * @return - has been assigned picture to Entity other than default image/icon?
+     */
+    boolean hasPictureDownloaded();
 }
