@@ -2,12 +2,18 @@ package com.example.csongor.tourguideapp.appsupport;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.csongor.tourguideapp.R;
@@ -55,7 +61,21 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
         }
         TextView open=mRootView.findViewById(R.id.list_item_txt_datetime);
                open.setText(place.getFromTo());
-
+        // checking children and pet allowance. If false, change icon color to red
+        ImageView childFriendly = mRootView.findViewById(R.id.list_item_icon_child_friendly);
+        GradientDrawable childFriendlyBackground = (GradientDrawable) childFriendly.getBackground();
+        if(!place.isChildFriendly()) {
+            childFriendlyBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_prohibited));
+        } else {
+            childFriendlyBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_allowed));
+        }
+        ImageView petsAllowed = mRootView.findViewById(R.id.list_item_icon_pets_allowed);
+        GradientDrawable petsBackground = (GradientDrawable) petsAllowed.getBackground();
+        if(!place.isPetAllowed()) {
+            petsBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_prohibited));
+        } else {
+            petsBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_allowed));
+        }
         return mRootView;
     }
 }

@@ -155,8 +155,12 @@ public class ListFragmentToDisplay extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.d(LOG_TAG, "------> Fragment onViewCreated called");
         if (savedInstanceState != null) {
+            try {
+                mEntityList = savedInstanceState.getParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST);
+            } catch (NullPointerException e) {
+                Log.e(LOG_TAG,"---> NullPointerException at restoring mEntityList");
+            }
             Log.d(LOG_TAG, "------> Fragment onViewStateRestored called");
-            mEntityList = savedInstanceState.getParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST);
             mArrayAdapter = new EntityListAdapter(getContext(), mEntityList);
             mListView.setAdapter(mArrayAdapter);
             mListView.setVisibility(View.VISIBLE);
@@ -203,6 +207,7 @@ public class ListFragmentToDisplay extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         Log.d(LOG_TAG, "------> Fragment onSaveInstanceState called");
+        if(mEntityList!=null)
             outState.putParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST, new ArrayList<Parcelable>(mEntityList));
         super.onSaveInstanceState(outState);
 
