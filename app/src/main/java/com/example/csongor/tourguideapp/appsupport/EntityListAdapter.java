@@ -76,6 +76,8 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
         } else {
             petsBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_allowed));
         }
+        ImageView icon=mRootView.findViewById(R.id.list_item_ic_image);
+        icon.setImageBitmap(place.getIconImage());
         return mRootView;
     }
 }

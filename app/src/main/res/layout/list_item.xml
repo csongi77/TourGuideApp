@@ -13,6 +13,7 @@
         <!-- Image of a place - if available. Else use default image
           taketn from material.io -->
         <ImageView
+            android:id="@+id/list_item_ic_image"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_gravity="center"
