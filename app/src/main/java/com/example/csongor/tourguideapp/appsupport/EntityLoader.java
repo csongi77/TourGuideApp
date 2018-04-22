@@ -44,9 +44,9 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
     private @BundleArgs int mCategoryId;
 
 
-    public EntityLoader(@NonNull Context context, @NonNull Bundle args) {
+    public EntityLoader(@NonNull Context context, @BundleArgs int categoryId) {
         super(context);
-        mCategoryId=args.getInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG);
+        mCategoryId=categoryId;
     }
 
 

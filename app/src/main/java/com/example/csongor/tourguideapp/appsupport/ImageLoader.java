@@ -32,9 +32,9 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     private @ResolutionConst  String  mResolution, mImageType;
     private Entity mPlace;
 
-    public ImageLoader(@NonNull Context context, Bundle args) {
+    public ImageLoader(@NonNull Context context, int imageId) {
         super(context);
-        mPlace=args.getParcelable(BundleStringArgs.BUNDLE_ENTITY);
+        mImageId=imageId;
     }
 
 
@@ -68,7 +68,7 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     public Bitmap loadInBackground() {
         Bitmap bitmap=null;
         try {
-            URL url=new URL(HOST+PORT+PATH_PARAM+String.valueOf(mPlace.getId())+"/icon/"+"hdpi");
+            URL url=new URL(HOST+PORT+PATH_PARAM+String.valueOf(mImageId)+"/icon/"+"hdpi");
             URLConnection conn=url.openConnection();
             InputStream stream=conn.getInputStream();
             bitmap = BitmapFactory.decodeStream(stream);

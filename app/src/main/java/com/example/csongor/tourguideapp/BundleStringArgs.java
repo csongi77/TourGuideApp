@@ -6,24 +6,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_ENTITY;
-import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_EVENTS;
-import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_HISTORICAL_PLACES;
-import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_RESTAURANTS;
-import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_SPORTS;
-import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_TO_LOAD_ARG;
+import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG;
+import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST;
 
 /**
  * These Annotations are defining String constants for passing values from Activity to Fragment.
  */
 @Retention(RetentionPolicy.SOURCE)
-@StringDef({BUNDLE_HISTORICAL_PLACES,BUNDLE_EVENTS,BUNDLE_SPORTS,BUNDLE_RESTAURANTS, BUNDLE_TO_LOAD_ARG, BUNDLE_ENTITY})
+@StringDef({BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG, BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST, BUNDLE_ENTITY})
 public @interface BundleStringArgs {
-    String BUNDLE_HISTORICAL_PLACES="BUNDLE_HISTORICAL_PLACES";
-    String BUNDLE_EVENTS="BUNDLE_EVENTS";
-    String BUNDLE_SPORTS="BUNDLE_SPORTS";
-    String BUNDLE_RESTAURANTS="BUNDLE_RESTAURANTS";
-    String BUNDLE_TO_LOAD_ARG="BUNDLE_TO_LOAD_ARG";
-    String BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST="BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST";
-    String BUNDLE_ENTITY="BUNDLE_ENTITY";
+
+    String BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG = "BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG";
+    String BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST = "BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST";
+    String BUNDLE_ENTITY = "BUNDLE_ENTITY";
 
 }

@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
+            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
             historicalPlacesFragment.setArguments(toPut);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.EVENTS);
+            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.EVENTS);
             historicalPlacesFragment.setArguments(toPut);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.SPORTS);
+            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.SPORTS);
             historicalPlacesFragment.setArguments(toPut);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG,BundleArgs.RESTAURANTS);
+            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.RESTAURANTS);
             historicalPlacesFragment.setArguments(toPut);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();

@@ -34,20 +34,20 @@ public class ListFragmentToDisplay extends Fragment {
 
     // Defining constants
     private static final String LOG_TAG = ListFragmentToDisplay.class.getSimpleName();
-    private static final int ENTITY_LOADER = 42;
     private static final Object mLock = new Object();
     private static final String BUNDLE_ENTITIES_WITH_IMAGES = "BUNDLE_ENTITIES_WITH_IMAGES";
+    private static final String BUNDLE_CURRENT_ENTITY_WITH_IMAGE = "BUNDLE_CURRENT_ENTITY_WITH_IMAGE";
 
     // Defining variables
     private ContentLoadingProgressBar mProgressBar;
     private ListView mListView;
     /**
-     * The mBundleLoadArg contains the required categoryId which was passed by NavigationDrawer
+     * The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
      * For possible values check @link{@BundleArgs}
      */
-    private Bundle mBundleLoadArg;
+    private Bundle mBundleCategory;
     private @BundleArgs
-    int mLoadArg;
+    int mCategoryId;
     private LoaderManager mLoaderManager;
     private Loader<List<Entity>> mEntityLoader;
     private Loader<Bitmap> mImageLoader;
@@ -58,7 +58,6 @@ public class ListFragmentToDisplay extends Fragment {
     private List<Entity> mPlacesWithImages;
     private TextView mMessage;
     private Entity mPlaceCurrent;
-    //private List<Integer> mPlaceIdsWithImages;
 
 
     public ListFragmentToDisplay() {
@@ -72,7 +71,9 @@ public class ListFragmentToDisplay extends Fragment {
         View mRootView = inflater.inflate(R.layout.fragment_list_container, container, false);
         // initializing variables
         mListView = mRootView.findViewById(R.id.list_view_container);
+        mListView.setVisibility(View.GONE);
         mProgressBar = mRootView.findViewById(R.id.list_view_loading_progress_bar);
+        mProgressBar.show();
         mMessage = mRootView.findViewById(R.id.fragment_root_txt_message);
         mMessage.setVisibility(View.GONE);
         Log.e(LOG_TAG, "--------> onCreateView called, savedInstanceState exist=" + String.valueOf(savedInstanceState != null));
@@ -86,8 +87,11 @@ public class ListFragmentToDisplay extends Fragment {
             @NonNull
             @Override
             public Loader<Bitmap> onCreateLoader(int id, @Nullable Bundle args) {
+                //  if (mImageLoader == null) {
                 mImageLoader = new ImageLoader(getContext(), args);
                 Log.d(LOG_TAG, "---> onCreateLoader, imageLoader created");
+                //  }
+                mImageLoader.forceLoad();
                 return mImageLoader;
             }
 
@@ -115,8 +119,6 @@ public class ListFragmentToDisplay extends Fragment {
                     // If there are more Entity with own images to download, continue loading process
                     startDownloadImages(mPlacesWithImages);
                 }
-
-
             }
 
             @Override
@@ -140,6 +142,7 @@ public class ListFragmentToDisplay extends Fragment {
                 if (mEntityLoader == null) {
                     mEntityLoader = new EntityLoader(getContext(), args);
                 }
+                mEntityLoader.forceLoad();
                 return mEntityLoader;
             }
 
@@ -154,22 +157,25 @@ public class ListFragmentToDisplay extends Fragment {
                     if (!(mEntityList.get(0) instanceof NullPlace)) {
                         mListView.setVisibility(View.VISIBLE);
                         mProgressBar.setVisibility(View.GONE);
-                        mLoaderManager.destroyLoader(ENTITY_LOADER);
+                        mLoaderManager.destroyLoader(mCategoryId);
 
                     } else {
                         mProgressBar.setVisibility(View.GONE);
                         mMessage.setVisibility(View.VISIBLE);
-                        mLoaderManager.destroyLoader(ENTITY_LOADER);
+                        mLoaderManager.destroyLoader(mCategoryId);
                     }
                 } else {
                     mEntityList.clear();
                     mEntityList.addAll(data);
                 }
-                mPlacesWithImages = new ArrayList<>();
-                for (Entity e : mEntityList
-                        ) {
-                    if (e.isPictureAvialable() && !e.hasPictureDownloaded())
-                        mPlacesWithImages.add(e);
+                // create ArrayList of Entites with own images
+                synchronized (mLock) {
+                    mPlacesWithImages = new ArrayList<>();
+                    for (Entity e : mEntityList
+                            ) {
+                        if (e.isPictureAvialable() && !e.hasPictureDownloaded())
+                            mPlacesWithImages.add(e);
+                    }
                 }
                 startDownloadImages(mPlacesWithImages);
             }
@@ -177,38 +183,71 @@ public class ListFragmentToDisplay extends Fragment {
             @Override
             public void onLoaderReset(@NonNull Loader<List<Entity>> loader) {
                 Log.d(LOG_TAG, "---> onLoaderReset");
-                mEntityList = null;
+                mArrayAdapter=null;
+                mEntityList=null;
+                mEntityLoader=null;
             }
         };
 
         // Getting bundle arguments for determining which Place Category should be loaded.
-        mBundleLoadArg = getArguments();
-        Log.d(LOG_TAG, "--------> onCreateView called, mBundleLoadArg: " + mBundleLoadArg.getInt(BundleStringArgs.BUNDLE_TO_LOAD_ARG));
+        mBundleCategory = getArguments();
+        mCategoryId = mBundleCategory.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG) * -1;
+        Log.d(LOG_TAG, "--------> onCreateView called, mBundleCategory: " + mBundleCategory.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG));
 
-
+/**
+ * 1) Check savedInstanceState. If it's null it means that new Fragment has been instantiated.
+ *  However, there might be active loaders with same loader ID For example, Historical Places menu
+ *  option was selected in Navigation Drawer but BEFORE Entities were loaded Restaurants were selected.
+ *  In this case there might be an active loader downloading Historical Places' Entities.
+ *  So if savedInstanceState is null:
+ *  1.TRUE) reset mEntityLoader and start download Entities with arguments retrieved from mBundleArg
+ *  1.FALSE)
+ *      1.F.1) This means that Fragment instance view has been recreated (i.e. after screen rotation).
+ *      We must ensure which loading phase is active:
+ *          a) Loading Entities OR
+ *          b) loading images into existing Entity list.
+ *      So try to retrieve mEnityList from savedInstanceState bundle. Check that whether the result is null.
+ *      1.F.1.TRUE) This means that mEntityList values hasn't been retrieved yet.
+ *          Init ENTITY_LOADER with mEntityListLoaderCallback.
+ *      1.F.1.FALSE) In this case mEntityList exists and mPlacesWithImages has been already created.
+ *          Set up mArrayAdapter
+ *          Assign it to mListView
+ *          Set up visibilities
+ *          Check whether IMAGE_LOADER is still active:
+ *              1.F.1.F.1) If it is, initLoader(IMAGE_LOADER).
+ *              1.F.1.F.2) Else retrive mPlacesWithImages from saved Bundle and
+ *                          call startDownLoadImages method with mPlacesWithImages list.
+ *
+ */
         mLoaderManager = getActivity().getSupportLoaderManager();
-        if (mLoaderManager.hasRunningLoaders()) {
-            mLoaderManager.restartLoader(ENTITY_LOADER, mBundleLoadArg, mEntityListLoaderCallback);
-        } else {
-            mEntityLoader = mLoaderManager.initLoader(ENTITY_LOADER, mBundleLoadArg, mEntityListLoaderCallback);
-        }
         if (savedInstanceState == null) {
-            mProgressBar.show();
-            mEntityLoader.forceLoad();
+            mLoaderManager.initLoader(mCategoryId, mBundleCategory, mEntityListLoaderCallback);
+            // mEntityLoader.forceLoad();
         } else {
             mEntityList = savedInstanceState.getParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST);
-            if (mEntityList != null) {
+            if (mEntityList == null) {
+                mLoaderManager.initLoader(mCategoryId, mBundleCategory, mEntityListLoaderCallback);
+            } else {
                 mArrayAdapter = new EntityListAdapter(getContext(), mEntityList);
                 mListView.setAdapter(mArrayAdapter);
-                mListView.setVisibility(View.VISIBLE);
-                mProgressBar.setVisibility(View.GONE);
                 mProgressBar.hide();
-                // Don't display data after screen orientation change if there were no valid Entities
-                if (mEntityList.get(0) instanceof NullPlace) {
+                if (mEntityList.isEmpty() || mEntityList.get(0) instanceof NullPlace) {
                     mMessage.setVisibility(View.VISIBLE);
+                    mListView.setVisibility(View.GONE);
+                } else {
+                    mListView.setVisibility(View.VISIBLE);
+                    mMessage.setVisibility(View.GONE);
+                }
+                if (mLoaderManager.hasRunningLoaders()) {
+                    mLoaderManager.initLoader(mPlacesWithImages.get(0).getId(), null, mImageLoaderCallback);
+                } else {
+                    mPlacesWithImages = savedInstanceState.getParcelableArrayList(BUNDLE_ENTITIES_WITH_IMAGES);
+                    startDownloadImages(mPlacesWithImages);
                 }
             }
+
         }
+
         return mRootView;
     }
 
@@ -221,9 +260,12 @@ public class ListFragmentToDisplay extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         Log.d(LOG_TAG, "------> Fragment onSaveInstanceState called");
+        outState.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG, mCategoryId);
+        outState.putInt(BUNDLE_CURRENT_ENTITY_WITH_IMAGE,mPlaceCurrent);
         if (mEntityList != null)
             outState.putParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST, new ArrayList<Parcelable>(mEntityList));
-            outState.putParcelableArrayList(BUNDLE_ENTITIES_WITH_IMAGES,new ArrayList<Parcelable>(mPlacesWithImages));
+        if (mPlacesWithImages != null)
+            outState.putParcelableArrayList(BUNDLE_ENTITIES_WITH_IMAGES, new ArrayList<Parcelable>(mPlacesWithImages));
         super.onSaveInstanceState(outState);
 
     }
@@ -232,11 +274,13 @@ public class ListFragmentToDisplay extends Fragment {
         Log.d(LOG_TAG, "------> START download image");
         if (!mEntityList.isEmpty()) {
             Log.d(LOG_TAG, "------> START download image////mEntityList is not empty");
-            Bundle placeBundle = new Bundle();
-            mPlaceCurrent = mEntityList.remove(0);
-            placeBundle.putParcelable(BundleStringArgs.BUNDLE_ENTITY, mPlaceCurrent);
-            mImageLoader = mLoaderManager.restartLoader(mPlaceCurrent.getId(), placeBundle, mImageLoaderCallback);
-            mImageLoader.forceLoad();
+            synchronized (mLock) {
+                Bundle placeBundle = new Bundle();
+                mPlaceCurrent = mEntityList.remove(0);
+                placeBundle.putParcelable(BundleStringArgs.BUNDLE_ENTITY, mPlaceCurrent);
+                mImageLoader = mLoaderManager.restartLoader(mPlaceCurrent.getId(), placeBundle, mImageLoaderCallback);
+                mImageLoader.forceLoad();
+            }
         }
     }
 
