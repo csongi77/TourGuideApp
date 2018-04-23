@@ -3,6 +3,7 @@ package com.example.csongor.tourguideapp.appsupport;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.OperationCanceledException;
 import android.support.annotation.NonNull;
@@ -20,22 +21,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class ImageLoader extends AsyncTaskLoader<Bitmap> {
+public class ImageLoader extends AsyncTaskLoader<Integer> {
     // Declaring host and port here. If it's changed, it's easier to find here
-    private static final String HOST="http://csongi.sytes.net:";
-    private static final String PORT="8879";
-    private static final String PATH_PARAM="/tourguide/q/image/";
-    private static final String LOG_TAG=EntityLoader.class.getSimpleName();
-    private static final Object mLock=new Object();
+    private static final String HOST = "http://csongi.sytes.net:";
+    private static final String PORT = "8879";
+    private static final String PATH_PARAM = "/tourguide/q/image/";
+    private static final String LOG_TAG = EntityLoader.class.getSimpleName();
+    private static final Object mLock = new Object();
 
     private int mImageId;
-    private @ResolutionConst  String  mResolution, mImageType;
-    private Entity mPlace;
+    private @ResolutionConst
+    String mResolution, mImageType;
+    private Entity mEntity;
 
-    public ImageLoader(@NonNull Context context, int imageId) {
+    public ImageLoader(@NonNull Context context, Entity entity) {
         super(context);
-        mImageId=imageId;
+        mEntity = entity;
+        mImageId = mEntity.getId();
     }
+
 
 
     /**
@@ -65,22 +69,38 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
      */
     @Nullable
     @Override
-    public Bitmap loadInBackground() {
-        Bitmap bitmap=null;
+    public Integer loadInBackground() {
+        Bitmap bitmap = null;
         try {
-            URL url=new URL(HOST+PORT+PATH_PARAM+String.valueOf(mImageId)+"/icon/"+"hdpi");
-            URLConnection conn=url.openConnection();
-            InputStream stream=conn.getInputStream();
+            URL url = new URL(HOST + PORT + PATH_PARAM + String.valueOf(mImageId) + "/icon/" + "hdpi");
+            URLConnection conn = url.openConnection();
+            InputStream stream = conn.getInputStream();
             bitmap = BitmapFactory.decodeStream(stream);
             stream.close();
-            Log.d(LOG_TAG,"Image has been loaded. Image size="+bitmap.getByteCount());
+            synchronized (mLock) {
+                Bitmap newBitmap = Bitmap.createBitmap(bitmap);
+                mEntity.setIconImage(newBitmap);
+                mEntity.setPictureDownloaded(true);
+            }
+            Log.d(LOG_TAG, "Image has been loaded. Image size=" + bitmap.getByteCount());
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG,"URL error");
+            Log.e(LOG_TAG, "URL error");
             e.printStackTrace();
         } catch (IOException e) {
-            Log.e(LOG_TAG,"OpenConnection Error");
+            Log.e(LOG_TAG, "OpenConnection Error");
             e.printStackTrace();
         }
-        return bitmap;
+        return this.getId();
+    }
+
+    /**
+     * Subclasses must implement this to take care of loading their data,
+     * as per {@link #startLoading()}.  This is not called by clients directly,
+     * but as a result of a call to {@link #startLoading()}.
+     * This will always be called from the process's main thread.
+     */
+    @Override
+    protected void onStartLoading() {
+        forceLoad();
     }
 }

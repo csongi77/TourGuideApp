@@ -37,6 +37,8 @@ public class ListFragmentToDisplay extends Fragment {
     private static final Object mLock = new Object();
     private static final String BUNDLE_ENTITIES_WITH_IMAGES = "BUNDLE_ENTITIES_WITH_IMAGES";
     private static final String BUNDLE_CURRENT_ENTITY_WITH_IMAGE = "BUNDLE_CURRENT_ENTITY_WITH_IMAGE";
+    private static final String BUNDLE_CATEGORY_ID = "BUNDLE_CATEGORY_ID";
+    private static final String BUNDLE_ENTITY_ARRAY_LIST = "BUNDLE_ENTITY_ARRAY_LIST";
 
     // Defining variables
     private ContentLoadingProgressBar mProgressBar;
@@ -45,14 +47,14 @@ public class ListFragmentToDisplay extends Fragment {
      * The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
      * For possible values check @link{@BundleArgs}
      */
-    private Bundle mBundleCategory;
+    private Bundle mCategoryIdBundle;
     private @BundleArgs
-    int mCategoryId;
+    int mCategoryId, mCategoryLoaderId;
     private LoaderManager mLoaderManager;
     private Loader<List<Entity>> mEntityLoader;
-    private Loader<Bitmap> mImageLoader;
+    private Loader<Integer> mImageLoader;
     private LoaderManager.LoaderCallbacks<List<Entity>> mEntityListLoaderCallback;
-    private LoaderManager.LoaderCallbacks<Bitmap> mImageLoaderCallback;
+    private LoaderManager.LoaderCallbacks<Integer> mImageLoaderCallback;
     private ArrayAdapter<Entity> mArrayAdapter;
     private List<Entity> mEntityList;
     private List<Entity> mPlacesWithImages;
@@ -68,7 +70,7 @@ public class ListFragmentToDisplay extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View mRootView = inflater.inflate(R.layout.fragment_list_container, container, false);
+        final View mRootView = inflater.inflate(R.layout.fragment_list_container, container, false);
         // initializing variables
         mListView = mRootView.findViewById(R.id.list_view_container);
         mListView.setVisibility(View.GONE);
@@ -76,213 +78,139 @@ public class ListFragmentToDisplay extends Fragment {
         mProgressBar.show();
         mMessage = mRootView.findViewById(R.id.fragment_root_txt_message);
         mMessage.setVisibility(View.GONE);
-        Log.e(LOG_TAG, "--------> onCreateView called, savedInstanceState exist=" + String.valueOf(savedInstanceState != null));
+        Log.e(LOG_TAG, "--------> onCreateView called, savedInstanceState exist=" + String.valueOf(getArguments().getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG)));
 
-        /**
-         *  First of all we have to define Loader Callbacks because there can be running
-         *  loaders and on initLoader we must be ready to receive results immediately.
-         */
-        // Defining image loader callbacks
-        mImageLoaderCallback = new LoaderManager.LoaderCallbacks<Bitmap>() {
+        //------------------------------------------------------------------------------------------
+        // LOADER CALLBACKS start
+        // -----------------------------------------------------------------------------------------
+
+        // Image Loader Callbacks
+        mImageLoaderCallback = new LoaderManager.LoaderCallbacks<Integer>() {
             @NonNull
             @Override
-            public Loader<Bitmap> onCreateLoader(int id, @Nullable Bundle args) {
-                //  if (mImageLoader == null) {
-                mImageLoader = new ImageLoader(getContext(), args);
-                Log.d(LOG_TAG, "---> onCreateLoader, imageLoader created");
-                //  }
-                mImageLoader.forceLoad();
+            public Loader<Integer> onCreateLoader(int id, @Nullable Bundle args) {
+                Entity place=(Entity)args.get(BUNDLE_CURRENT_ENTITY_WITH_IMAGE);
+                    mImageLoader = new ImageLoader(getContext(),place);
                 return mImageLoader;
             }
 
             @Override
-            public void onLoadFinished(@NonNull Loader<Bitmap> loader, Bitmap data) {
-                /*
-                When finished download of an image, make a new reference of it because
-                Loader will destroyed as the original reference of picture.
-                Creating new Bitmap, assigning it to Entity and setting it that Picture
-                has been downloaded must be synchronized.
-                For example when new picture reference has been created but hasn't been added
-                to Entity, on calling an event (that calls onSaveInstanceState) could interrupt
-                this process.
-                 */
-                synchronized (mLock) {
-                    Bitmap b = Bitmap.createBitmap(data);
-                    mPlaceCurrent.setIconImage(b);
-                    mPlaceCurrent.setPictureDownloaded(true);
-                    mArrayAdapter.notifyDataSetChanged();
-                    int toDestroy = mPlaceCurrent.getId();
-                    mLoaderManager.destroyLoader(toDestroy);
-                }
-                Log.d(LOG_TAG, "----> NotifyDatasetChanged called");
-                if (!mPlacesWithImages.isEmpty()) {
-                    // If there are more Entity with own images to download, continue loading process
-                    startDownloadImages(mPlacesWithImages);
-                }
+            public void onLoadFinished(@NonNull Loader<Integer> loader, Integer data) {
+                mArrayAdapter.notifyDataSetChanged();
+                mEntityList.remove(0);
+                downloadIcons(mEntityList);
             }
 
             @Override
-            public void onLoaderReset(@NonNull Loader<Bitmap> loader) {
-                Log.d(LOG_TAG, "----> ImageLoader reset called");
-                // Set mImageLoader to null in order to free up resources
-                mImageLoader = null;
+            public void onLoaderReset(@NonNull Loader<Integer> loader) {
+                mEntityLoader=null;
             }
         };
 
-        /**
-         * Implementing Callbacks of EntityLoader in order to retrieve Entity list asynchronously
-         */
+        // Entity Loader Callbacks
         mEntityListLoaderCallback = new LoaderManager.LoaderCallbacks<List<Entity>>() {
-
             @NonNull
             @Override
-            public Loader<List<Entity>> onCreateLoader(int id, Bundle args) {
-                Log.d(LOG_TAG, "---> onCreateLoader");
-                // set up EntityLoader. args contains categoryId.
-                if (mEntityLoader == null) {
-                    mEntityLoader = new EntityLoader(getContext(), args);
+            public Loader<List<Entity>> onCreateLoader(int id, @Nullable Bundle args) {
+                if(mEntityLoader==null) {
+                    return mEntityLoader = new EntityLoader(getContext(), mCategoryId);
                 }
-                mEntityLoader.forceLoad();
                 return mEntityLoader;
             }
 
             @Override
             public void onLoadFinished(@NonNull Loader<List<Entity>> loader, List<Entity> data) {
-                Log.d(LOG_TAG, "---> onLoadFinished");
+                Log.d(LOG_TAG,"-------------------------------------->LOAD FINISHED");
+                mArrayAdapter=new EntityListAdapter(getContext(),data);
+                mListView.setAdapter(mArrayAdapter);
                 mProgressBar.hide();
-                if (mEntityList == null) {
-                    mEntityList = data;
-                    mArrayAdapter = new EntityListAdapter(getContext(), mEntityList);
-                    mListView.setAdapter(mArrayAdapter);
-                    if (!(mEntityList.get(0) instanceof NullPlace)) {
-                        mListView.setVisibility(View.VISIBLE);
-                        mProgressBar.setVisibility(View.GONE);
-                        mLoaderManager.destroyLoader(mCategoryId);
-
-                    } else {
-                        mProgressBar.setVisibility(View.GONE);
-                        mMessage.setVisibility(View.VISIBLE);
-                        mLoaderManager.destroyLoader(mCategoryId);
-                    }
+                if(data.get(0) instanceof NullPlace){
+                    mMessage.setVisibility(View.VISIBLE);
+                    mListView.setVisibility(View.GONE);
                 } else {
-                    mEntityList.clear();
-                    mEntityList.addAll(data);
+                    mMessage.setVisibility(View.GONE);
+                    mListView.setVisibility(View.VISIBLE);
                 }
-                // create ArrayList of Entites with own images
-                synchronized (mLock) {
-                    mPlacesWithImages = new ArrayList<>();
-                    for (Entity e : mEntityList
-                            ) {
-                        if (e.isPictureAvialable() && !e.hasPictureDownloaded())
-                            mPlacesWithImages.add(e);
-                    }
+                // todo 1) a képekkel nem rendelkező entitiket berakni egy globál listába
+                mEntityList=new ArrayList<>();
+                for (Entity place:data
+                     ) {
+                    if(place.isPictureAvialable()&&!place.hasPictureDownloaded())
+                        mEntityList.add(place);
                 }
-                startDownloadImages(mPlacesWithImages);
+                downloadIcons(mEntityList);
+                    // todo 1a) egyenként letölteni az ikonokat, az ImageLoader bámosolja őket az entitibe
             }
 
             @Override
             public void onLoaderReset(@NonNull Loader<List<Entity>> loader) {
-                Log.d(LOG_TAG, "---> onLoaderReset");
-                mArrayAdapter=null;
-                mEntityList=null;
-                mEntityLoader=null;
+                Log.d(LOG_TAG, "----------------> Entity onLoaderReset has been called");
+                mProgressBar.show();
+                mMessage.setVisibility(View.GONE);
+                mListView.setVisibility(View.GONE);
             }
         };
 
-        // Getting bundle arguments for determining which Place Category should be loaded.
-        mBundleCategory = getArguments();
-        mCategoryId = mBundleCategory.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG) * -1;
-        Log.d(LOG_TAG, "--------> onCreateView called, mBundleCategory: " + mBundleCategory.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG));
+        //------------------------------------------------------------------------------------------
+        // LOADER CALLBACKS end
+        //------------------------------------------------------------------------------------------
 
-/**
- * 1) Check savedInstanceState. If it's null it means that new Fragment has been instantiated.
- *  However, there might be active loaders with same loader ID For example, Historical Places menu
- *  option was selected in Navigation Drawer but BEFORE Entities were loaded Restaurants were selected.
- *  In this case there might be an active loader downloading Historical Places' Entities.
- *  So if savedInstanceState is null:
- *  1.TRUE) reset mEntityLoader and start download Entities with arguments retrieved from mBundleArg
- *  1.FALSE)
- *      1.F.1) This means that Fragment instance view has been recreated (i.e. after screen rotation).
- *      We must ensure which loading phase is active:
- *          a) Loading Entities OR
- *          b) loading images into existing Entity list.
- *      So try to retrieve mEnityList from savedInstanceState bundle. Check that whether the result is null.
- *      1.F.1.TRUE) This means that mEntityList values hasn't been retrieved yet.
- *          Init ENTITY_LOADER with mEntityListLoaderCallback.
- *      1.F.1.FALSE) In this case mEntityList exists and mPlacesWithImages has been already created.
- *          Set up mArrayAdapter
- *          Assign it to mListView
- *          Set up visibilities
- *          Check whether IMAGE_LOADER is still active:
- *              1.F.1.F.1) If it is, initLoader(IMAGE_LOADER).
- *              1.F.1.F.2) Else retrive mPlacesWithImages from saved Bundle and
- *                          call startDownLoadImages method with mPlacesWithImages list.
- *
- */
+        mCategoryIdBundle = getArguments();
         mLoaderManager = getActivity().getSupportLoaderManager();
-        if (savedInstanceState == null) {
-            mLoaderManager.initLoader(mCategoryId, mBundleCategory, mEntityListLoaderCallback);
-            // mEntityLoader.forceLoad();
+        mCategoryId = mCategoryIdBundle.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG);
+        mCategoryLoaderId = mCategoryId * -1;
+        if(savedInstanceState==null) {
+            mLoaderManager.restartLoader(-1, mCategoryIdBundle, mEntityListLoaderCallback);
         } else {
-            mEntityList = savedInstanceState.getParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST);
-            if (mEntityList == null) {
-                mLoaderManager.initLoader(mCategoryId, mBundleCategory, mEntityListLoaderCallback);
-            } else {
-                mArrayAdapter = new EntityListAdapter(getContext(), mEntityList);
-                mListView.setAdapter(mArrayAdapter);
-                mProgressBar.hide();
-                if (mEntityList.isEmpty() || mEntityList.get(0) instanceof NullPlace) {
-                    mMessage.setVisibility(View.VISIBLE);
-                    mListView.setVisibility(View.GONE);
-                } else {
-                    mListView.setVisibility(View.VISIBLE);
-                    mMessage.setVisibility(View.GONE);
-                }
-                if (mLoaderManager.hasRunningLoaders()) {
-                    mLoaderManager.initLoader(mPlacesWithImages.get(0).getId(), null, mImageLoaderCallback);
-                } else {
-                    mPlacesWithImages = savedInstanceState.getParcelableArrayList(BUNDLE_ENTITIES_WITH_IMAGES);
-                    startDownloadImages(mPlacesWithImages);
-                }
-            }
-
+            mLoaderManager.initLoader(-1, mCategoryIdBundle, mEntityListLoaderCallback);
         }
 
         return mRootView;
     }
 
 
+
     /**
-     * Saving EntityList into Bundle in order to avoid reloading data, and sparing network traffic
+     * Called to ask the fragment to save its current dynamic state, so it
+     * can later be reconstructed in a new instance of its process is
+     * restarted.  If a new instance of the fragment later needs to be
+     * created, the data you place in the Bundle here will be available
+     * in the Bundle given to {@link #onCreate(Bundle)},
+     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}, and
+     * {@link #onActivityCreated(Bundle)}.
+     * <p>
+     * <p>This corresponds to {@link Activity#onSaveInstanceState(Bundle)
+     * Activity.onSaveInstanceState(Bundle)} and most of the discussion there
+     * applies here as well.  Note however: <em>this method may be called
+     * at any time before {@link #onDestroy()}</em>.  There are many situations
+     * where a fragment may be mostly torn down (such as when placed on the
+     * back stack with no UI showing), but its state will not be saved until
+     * its owning activity actually needs to save its state.
      *
      * @param outState Bundle in which to place your saved state.
      */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        Log.d(LOG_TAG, "------> Fragment onSaveInstanceState called");
-        outState.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG, mCategoryId);
-        outState.putInt(BUNDLE_CURRENT_ENTITY_WITH_IMAGE,mPlaceCurrent);
-        if (mEntityList != null)
-            outState.putParcelableArrayList(BundleStringArgs.BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST, new ArrayList<Parcelable>(mEntityList));
-        if (mPlacesWithImages != null)
-            outState.putParcelableArrayList(BUNDLE_ENTITIES_WITH_IMAGES, new ArrayList<Parcelable>(mPlacesWithImages));
         super.onSaveInstanceState(outState);
-
     }
 
-    private void startDownloadImages(List<Entity> mEntityList) {
-        Log.d(LOG_TAG, "------> START download image");
-        if (!mEntityList.isEmpty()) {
-            Log.d(LOG_TAG, "------> START download image////mEntityList is not empty");
-            synchronized (mLock) {
-                Bundle placeBundle = new Bundle();
-                mPlaceCurrent = mEntityList.remove(0);
-                placeBundle.putParcelable(BundleStringArgs.BUNDLE_ENTITY, mPlaceCurrent);
-                mImageLoader = mLoaderManager.restartLoader(mPlaceCurrent.getId(), placeBundle, mImageLoaderCallback);
-                mImageLoader.forceLoad();
-            }
+    /**
+     * Called when the fragment is no longer attached to its activity.  This
+     * is called after {@link #onDestroy()}.
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(LOG_TAG, "---------------> DETACHED");
+    }
+
+    private void downloadIcons(List<Entity> entityList) {
+        if(!entityList.isEmpty()){
+            Entity place=entityList.get(0);
+            Bundle bundlePlace=new Bundle();
+            bundlePlace.putParcelable(BUNDLE_CURRENT_ENTITY_WITH_IMAGE,place);
+            mLoaderManager.restartLoader(-2,bundlePlace,mImageLoaderCallback);
         }
     }
-
 
 }
