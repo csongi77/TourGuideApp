@@ -155,7 +155,7 @@ public class ListFragmentToDisplay extends Fragment {
 
         mBundleFromActivity = getArguments();
         mLoaderManager = getActivity().getSupportLoaderManager();
-        mCategoryId = mBundleFromActivity.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG);
+        mCategoryId = mBundleFromActivity.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY);
         if (savedInstanceState == null) {
             Log.d(LOG_TAG,"------> restartLoader");
             mLoaderManager.restartLoader(-1, mBundleFromActivity, mEntityListLoaderCallback);

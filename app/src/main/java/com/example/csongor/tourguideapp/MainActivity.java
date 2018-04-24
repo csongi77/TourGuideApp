@@ -72,6 +72,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    /**
+     * On Back pressed, if Drawer is opened, it will be closed.
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -104,6 +107,11 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *  On clicking Navigation Drawer item it opens the appropriate Fragment
+     * @param item - selected Navigation Drawer item (Historical Places, Events, Sports, Restaurants)
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -114,28 +122,28 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.historical_places) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.HISTORICAL_PLACES);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.events) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.EVENTS);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.EVENTS);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.sports) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.SPORTS);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.SPORTS);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.restaurants) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.RESTAURANTS);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.RESTAURANTS);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
