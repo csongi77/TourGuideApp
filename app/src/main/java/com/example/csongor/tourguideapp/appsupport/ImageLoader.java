@@ -34,6 +34,7 @@ public class ImageLoader extends AsyncTaskLoader<Integer> {
     String mResolution, mImageType;
     private Entity mEntity;
 
+    // todo set imageloader args to Bundle -> Entity + resolution + imageType
     public ImageLoader(@NonNull Context context, Entity entity) {
         super(context);
         mEntity = entity;

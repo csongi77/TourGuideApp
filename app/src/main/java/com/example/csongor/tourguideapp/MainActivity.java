@@ -23,6 +23,7 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String BUNDLE_SCREEN_RESOLUTION = "BUNDLE_SCREEN_RESOLUTION";
     /**
      * variable for proper image and icon download. Possible values:
      * ldpi, mdpi, hdpi, xhdpi, xxhdpi and xxxhdpi
@@ -57,12 +58,17 @@ public class MainActivity extends AppCompatActivity
         if (!(networkInfo != null && networkInfo.isConnectedOrConnecting()))
             Snackbar.make(findViewById(R.id.coordinator_root_layout), R.string.not_connected, Snackbar.LENGTH_INDEFINITE).show();
 
-        /* Check and assign device resolution for retrieving correct images and icons at fragments. */
-        // todo move it into the fragment
-        mResolution = getResolutionString();
+        /* Check and assign device resolution for retrieving correct images and icons at fragments.
+         * Also handle screen rotation, getting saved value from Bundle instead
+         * check it via getResolution method */
+        if(savedInstanceState!=null) {
+            mResolution = savedInstanceState.getString(BUNDLE_SCREEN_RESOLUTION);
+        } else {
+            mResolution = getResolutionString();
+        }
         // initializing FragmentManager
         mFragmentManager = MainActivity.this.getSupportFragmentManager();
-
+        mResolution = getResolutionString();
     }
 
 
@@ -98,42 +104,39 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        // Put screen resolution into Bundle and the Category of Entity, too
         int id = item.getItemId();
-        // todo: rename Resources
-        if (id == R.id.nav_camera) {
+        Bundle bundleToSendToFragment=new Bundle();
+        bundleToSendToFragment.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
+        if (id == R.id.historical_places) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
-            historicalPlacesFragment.setArguments(toPut);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.HISTORICAL_PLACES);
+            historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.events) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.EVENTS);
-            historicalPlacesFragment.setArguments(toPut);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.EVENTS);
+            historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.sports) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.SPORTS);
-            historicalPlacesFragment.setArguments(toPut);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.SPORTS);
+            historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.restaurants) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
-            Bundle toPut=new Bundle();
-            toPut.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.RESTAURANTS);
-            historicalPlacesFragment.setArguments(toPut);
+            bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG,BundleArgs.RESTAURANTS);
+            historicalPlacesFragment.setArguments(bundleToSendToFragment);
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         }
@@ -143,8 +146,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
+        super.onSaveInstanceState(outState);
+    }
+
     /**
-     * method for determining screen resolution
+     * method for determining screen resolution in order to load appropriate image/icon size
      *
      * @return ldpi, mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi
      */

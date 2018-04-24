@@ -1,9 +1,7 @@
 package com.example.csongor.tourguideapp;
 
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -40,16 +38,18 @@ public class ListFragmentToDisplay extends Fragment {
     private static final String BUNDLE_CATEGORY_ID = "BUNDLE_CATEGORY_ID";
     private static final String BUNDLE_ENTITY_ARRAY_LIST = "BUNDLE_ENTITY_ARRAY_LIST";
 
-    // Defining variables
+    // Defining variables /Views/
     private ContentLoadingProgressBar mProgressBar;
     private ListView mListView;
+    private TextView mMessage;
+
     /**
      * The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
      * For possible values check @link{@BundleArgs}
      */
-    private Bundle mCategoryIdBundle;
+    private Bundle mBundleFromActivity;
     private @BundleArgs
-    int mCategoryId, mCategoryLoaderId;
+    int mCategoryId;
     private LoaderManager mLoaderManager;
     private Loader<List<Entity>> mEntityLoader;
     private Loader<Integer> mImageLoader;
@@ -57,9 +57,7 @@ public class ListFragmentToDisplay extends Fragment {
     private LoaderManager.LoaderCallbacks<Integer> mImageLoaderCallback;
     private ArrayAdapter<Entity> mArrayAdapter;
     private List<Entity> mEntityList;
-    private List<Entity> mPlacesWithImages;
-    private TextView mMessage;
-    private Entity mPlaceCurrent;
+
 
 
     public ListFragmentToDisplay() {
@@ -78,7 +76,6 @@ public class ListFragmentToDisplay extends Fragment {
         mProgressBar.show();
         mMessage = mRootView.findViewById(R.id.fragment_root_txt_message);
         mMessage.setVisibility(View.GONE);
-        Log.e(LOG_TAG, "--------> onCreateView called, savedInstanceState exist=" + String.valueOf(getArguments().getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG)));
 
         //------------------------------------------------------------------------------------------
         // LOADER CALLBACKS start
@@ -89,21 +86,22 @@ public class ListFragmentToDisplay extends Fragment {
             @NonNull
             @Override
             public Loader<Integer> onCreateLoader(int id, @Nullable Bundle args) {
-                Entity place=(Entity)args.get(BUNDLE_CURRENT_ENTITY_WITH_IMAGE);
-                    mImageLoader = new ImageLoader(getContext(),place);
+                Entity place = (Entity) args.get(BUNDLE_CURRENT_ENTITY_WITH_IMAGE);
+                mImageLoader = new ImageLoader(getContext(), place);
                 return mImageLoader;
             }
 
             @Override
             public void onLoadFinished(@NonNull Loader<Integer> loader, Integer data) {
                 mArrayAdapter.notifyDataSetChanged();
-                mEntityList.remove(0);
+                if (mEntityList != null && !mEntityList.isEmpty())
+                    mEntityList.remove(0);
                 downloadIcons(mEntityList);
             }
 
             @Override
             public void onLoaderReset(@NonNull Loader<Integer> loader) {
-                mEntityLoader=null;
+                mEntityLoader = null;
             }
         };
 
@@ -112,7 +110,7 @@ public class ListFragmentToDisplay extends Fragment {
             @NonNull
             @Override
             public Loader<List<Entity>> onCreateLoader(int id, @Nullable Bundle args) {
-                if(mEntityLoader==null) {
+                if (mEntityLoader == null) {
                     return mEntityLoader = new EntityLoader(getContext(), mCategoryId);
                 }
                 return mEntityLoader;
@@ -120,26 +118,26 @@ public class ListFragmentToDisplay extends Fragment {
 
             @Override
             public void onLoadFinished(@NonNull Loader<List<Entity>> loader, List<Entity> data) {
-                Log.d(LOG_TAG,"-------------------------------------->LOAD FINISHED");
-                mArrayAdapter=new EntityListAdapter(getContext(),data);
+                Log.d(LOG_TAG, "-------------------------------------->LOAD FINISHED");
+                mArrayAdapter = new EntityListAdapter(getContext(), data);
                 mListView.setAdapter(mArrayAdapter);
                 mProgressBar.hide();
-                if(data.get(0) instanceof NullPlace){
+                if (data.get(0) instanceof NullPlace) {
                     mMessage.setVisibility(View.VISIBLE);
                     mListView.setVisibility(View.GONE);
                 } else {
                     mMessage.setVisibility(View.GONE);
                     mListView.setVisibility(View.VISIBLE);
                 }
-                // todo 1) a képekkel nem rendelkező entitiket berakni egy globál listába
-                mEntityList=new ArrayList<>();
-                for (Entity place:data
-                     ) {
-                    if(place.isPictureAvialable()&&!place.hasPictureDownloaded())
+                // todo add Bundle resolution + imageType + imageId
+                mEntityList = new ArrayList<>();
+                for (Entity place : data
+                        ) {
+                    if (place.isPictureAvialable() && !place.hasPictureDownloaded())
                         mEntityList.add(place);
                 }
                 downloadIcons(mEntityList);
-                    // todo 1a) egyenként letölteni az ikonokat, az ImageLoader bámosolja őket az entitibe
+
             }
 
             @Override
@@ -155,19 +153,19 @@ public class ListFragmentToDisplay extends Fragment {
         // LOADER CALLBACKS end
         //------------------------------------------------------------------------------------------
 
-        mCategoryIdBundle = getArguments();
+        mBundleFromActivity = getArguments();
         mLoaderManager = getActivity().getSupportLoaderManager();
-        mCategoryId = mCategoryIdBundle.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG);
-        mCategoryLoaderId = mCategoryId * -1;
-        if(savedInstanceState==null) {
-            mLoaderManager.restartLoader(-1, mCategoryIdBundle, mEntityListLoaderCallback);
+        mCategoryId = mBundleFromActivity.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY_TO_LOAD_ARG);
+        if (savedInstanceState == null) {
+            Log.d(LOG_TAG,"------> restartLoader");
+            mLoaderManager.restartLoader(-1, mBundleFromActivity, mEntityListLoaderCallback);
         } else {
-            mLoaderManager.initLoader(-1, mCategoryIdBundle, mEntityListLoaderCallback);
+            Log.d(LOG_TAG,"------> initLoader");
+            mLoaderManager.initLoader(-1, mBundleFromActivity, mEntityListLoaderCallback);
         }
 
         return mRootView;
     }
-
 
 
     /**
@@ -205,11 +203,11 @@ public class ListFragmentToDisplay extends Fragment {
     }
 
     private void downloadIcons(List<Entity> entityList) {
-        if(!entityList.isEmpty()){
-            Entity place=entityList.get(0);
-            Bundle bundlePlace=new Bundle();
-            bundlePlace.putParcelable(BUNDLE_CURRENT_ENTITY_WITH_IMAGE,place);
-            mLoaderManager.restartLoader(-2,bundlePlace,mImageLoaderCallback);
+        if (!entityList.isEmpty()) {
+            Entity place = entityList.get(0);
+            Bundle bundlePlace = new Bundle();
+            bundlePlace.putParcelable(BUNDLE_CURRENT_ENTITY_WITH_IMAGE, place);
+            mLoaderManager.restartLoader(-2, bundlePlace, mImageLoaderCallback);
         }
     }
 
