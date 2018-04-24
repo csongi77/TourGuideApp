@@ -50,6 +50,8 @@ public class ListFragmentToDisplay extends Fragment {
     private Bundle mBundleFromActivity;
     private @BundleArgs
     int mCategoryId;
+    private  @BundleStringArgs
+    String mResolution;
     private LoaderManager mLoaderManager;
     private Loader<List<Entity>> mEntityLoader;
     private Loader<Integer> mImageLoader;
@@ -69,7 +71,7 @@ public class ListFragmentToDisplay extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         final View mRootView = inflater.inflate(R.layout.fragment_list_container, container, false);
-        // initializing variables
+        // initializing View variables
         mListView = mRootView.findViewById(R.id.list_view_container);
         mListView.setVisibility(View.GONE);
         mProgressBar = mRootView.findViewById(R.id.list_view_loading_progress_bar);
@@ -86,8 +88,7 @@ public class ListFragmentToDisplay extends Fragment {
             @NonNull
             @Override
             public Loader<Integer> onCreateLoader(int id, @Nullable Bundle args) {
-                Entity place = (Entity) args.get(BUNDLE_CURRENT_ENTITY_WITH_IMAGE);
-                mImageLoader = new ImageLoader(getContext(), place);
+                mImageLoader = new ImageLoader(getContext(), args);
                 return mImageLoader;
             }
 
@@ -153,9 +154,21 @@ public class ListFragmentToDisplay extends Fragment {
         // LOADER CALLBACKS end
         //------------------------------------------------------------------------------------------
 
+        // Loading Bundle arguments passed by MainActivity
         mBundleFromActivity = getArguments();
-        mLoaderManager = getActivity().getSupportLoaderManager();
         mCategoryId = mBundleFromActivity.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY);
+        mResolution = mBundleFromActivity.getString(BundleStringArgs.BUNDLE_RESOLUTION);
+
+        /**
+         * getting LoaderManager.
+         * If savedInstanceState is null, it means that this Fragment
+         * was opened first time from Main Activity. In this case we have to restartLoader with
+         * appropriate arguments since we use same Loader ID for loading Entity Lists of all
+         * categories.
+         * If savedInstanceState exists, it means that some config has changed, for example screen
+         * rotation. In this case we can use initLoader for avoiding unnecessary network traffic.
+         */
+        mLoaderManager = getActivity().getSupportLoaderManager();
         if (savedInstanceState == null) {
             Log.d(LOG_TAG,"------> restartLoader");
             mLoaderManager.restartLoader(-1, mBundleFromActivity, mEntityListLoaderCallback);
@@ -169,21 +182,7 @@ public class ListFragmentToDisplay extends Fragment {
 
 
     /**
-     * Called to ask the fragment to save its current dynamic state, so it
-     * can later be reconstructed in a new instance of its process is
-     * restarted.  If a new instance of the fragment later needs to be
-     * created, the data you place in the Bundle here will be available
-     * in the Bundle given to {@link #onCreate(Bundle)},
-     * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}, and
-     * {@link #onActivityCreated(Bundle)}.
-     * <p>
-     * <p>This corresponds to {@link Activity#onSaveInstanceState(Bundle)
-     * Activity.onSaveInstanceState(Bundle)} and most of the discussion there
-     * applies here as well.  Note however: <em>this method may be called
-     * at any time before {@link #onDestroy()}</em>.  There are many situations
-     * where a fragment may be mostly torn down (such as when placed on the
-     * back stack with no UI showing), but its state will not be saved until
-     * its owning activity actually needs to save its state.
+     * Overriding onSaveInstanceState we can assure to saveInstanceState Bundle will exists.
      *
      * @param outState Bundle in which to place your saved state.
      */
@@ -192,21 +191,35 @@ public class ListFragmentToDisplay extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    /**
-     * Called when the fragment is no longer attached to its activity.  This
-     * is called after {@link #onDestroy()}.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.d(LOG_TAG, "---------------> DETACHED");
-    }
 
+    /**
+     * Helper method for loading icon images to ArrayList. This method is called from
+     * A) EntityListLoader Callback's onFinished method (when EntityList has been created)
+     * B) ImageLoader Callback's onFinished method (when an Image instance has been downloaded)
+     * The method takes the first Entity, passes it to ImageLoader. Then ImageLoader downloads
+     * image in appropriate resolution, creates a new Bitmap reference to Entity, and attaches the
+     * new Bitmap instance to Entity. Then the onLoadFinished callback method will be called.
+     * Afterwards the first element will removed from the EntityList and will passed back to this
+     * method until all images would be downloaded.
+     * Becase of this we can use only one instance of this AsyncTaskLoader.
+     * @param entityList - Entity list with Entity instances which has images other than default
+     *                   and hasn't been that image dowloaded yet.
+     */
     private void downloadIcons(List<Entity> entityList) {
         if (!entityList.isEmpty()) {
             Entity place = entityList.get(0);
+            /**
+             * Creating Bundle which is necessary for downloading appropriate image:
+             * 1) Entity which contains imageId to download
+             * 2) Resolution for determining which image must be downloaded depending on
+             *      device's resolution for optimizing network traffic
+             * 3) Icon - since we using same algorithm for downloading images and icons
+             *      we must send this constant.
+             */
             Bundle bundlePlace = new Bundle();
-            bundlePlace.putParcelable(BUNDLE_CURRENT_ENTITY_WITH_IMAGE, place);
+            bundlePlace.putParcelable(BundleStringArgs.BUNDLE_ENTITY, place);
+            bundlePlace.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
+            bundlePlace.putString(BundleStringArgs.BUNDLE_IMAGE_TYPE,ResolutionConst.ICON);
             mLoaderManager.restartLoader(-2, bundlePlace, mImageLoaderCallback);
         }
     }

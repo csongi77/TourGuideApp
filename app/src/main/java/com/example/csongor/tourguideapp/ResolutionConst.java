@@ -17,12 +17,12 @@ import static com.example.csongor.tourguideapp.ResolutionConst.XXXHDPI;
 @Retention(RetentionPolicy.SOURCE)
 @StringDef({LDPI, MDPI, HDPI, XHDPI, XXHDPI, XXXHDPI, IMAGE, ICON})
 public @interface ResolutionConst {
-    public static final String LDPI = "ldpi";
-    public static final String MDPI = "mdpi";
-    public static final String HDPI = "hdpi";
-    public static final String XHDPI = "xhdpi";
-    public static final String XXHDPI = "xxhdpi";
-    public static final String XXXHDPI = "xxxhdpi";
+    String LDPI = "ldpi";
+    String MDPI = "mdpi";
+    String HDPI = "hdpi";
+    String XHDPI = "xhdpi";
+    String XXHDPI = "xxhdpi";
+    String XXXHDPI = "xxxhdpi";
 
     String IMAGE="image";
     String ICON="icon";

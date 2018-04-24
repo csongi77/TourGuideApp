@@ -162,6 +162,7 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
         /*
         Set up default image because all images will be loaded asynchronously after retrieving whole
         place list (don't let User to wait... :) )
+        The pictureAvailable will tell us whether we must download icon/image from server
          */
         Bitmap defaultImage, defaultIcon;
         Drawable d = getContext().getResources().getDrawable(R.drawable.ic_image_black_48dp);
@@ -187,6 +188,7 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
             Log.e(LOG_TAG, "--->JSON parsing error");
             e.printStackTrace();
         }
+        // if there are no results due error or empty list, a NullPlace will be added instead throwing Exception.
         if (placeList.isEmpty()) placeList.add(new NullPlace());
         for (Entity e : placeList
                 ) {
