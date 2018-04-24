@@ -32,11 +32,6 @@ public class ListFragmentToDisplay extends Fragment {
 
     // Defining constants
     private static final String LOG_TAG = ListFragmentToDisplay.class.getSimpleName();
-    private static final Object mLock = new Object();
-    private static final String BUNDLE_ENTITIES_WITH_IMAGES = "BUNDLE_ENTITIES_WITH_IMAGES";
-    private static final String BUNDLE_CURRENT_ENTITY_WITH_IMAGE = "BUNDLE_CURRENT_ENTITY_WITH_IMAGE";
-    private static final String BUNDLE_CATEGORY_ID = "BUNDLE_CATEGORY_ID";
-    private static final String BUNDLE_ENTITY_ARRAY_LIST = "BUNDLE_ENTITY_ARRAY_LIST";
 
     // Defining variables /Views/
     private ContentLoadingProgressBar mProgressBar;
@@ -95,6 +90,11 @@ public class ListFragmentToDisplay extends Fragment {
             @Override
             public void onLoadFinished(@NonNull Loader<Integer> loader, Integer data) {
                 mArrayAdapter.notifyDataSetChanged();
+                /**
+                 * When image loaded successfully the related Entity will be removed from the list
+                 * which will be passed back to downloadIcons method. Details can be found at method's
+                 * description
+                 */
                 if (mEntityList != null && !mEntityList.isEmpty())
                     mEntityList.remove(0);
                 downloadIcons(mEntityList);
@@ -117,6 +117,13 @@ public class ListFragmentToDisplay extends Fragment {
                 return mEntityLoader;
             }
 
+            /**
+             * When Entity list successfully downloaded from the server via REST, this callback
+             * method will generate a new list containing the reference of Entities which has
+             * own Images and Icons located on server
+             * @param loader - the Loader object
+             * @param data - the returned Entity List related to selected category
+             */
             @Override
             public void onLoadFinished(@NonNull Loader<List<Entity>> loader, List<Entity> data) {
                 Log.d(LOG_TAG, "-------------------------------------->LOAD FINISHED");
@@ -124,19 +131,25 @@ public class ListFragmentToDisplay extends Fragment {
                 mListView.setAdapter(mArrayAdapter);
                 mProgressBar.hide();
                 if (data.get(0) instanceof NullPlace) {
+                    // if there were no results we show a message ("No results found")
                     mMessage.setVisibility(View.VISIBLE);
                     mListView.setVisibility(View.GONE);
                 } else {
+                    // else we show the Entity List
                     mMessage.setVisibility(View.GONE);
                     mListView.setVisibility(View.VISIBLE);
                 }
-                // todo add Bundle resolution + imageType + imageId
+                /**
+                 * The following code selects the Entities which has own icons other then default and
+                 * hasn't been downloaded yet.
+                 */
                 mEntityList = new ArrayList<>();
                 for (Entity place : data
                         ) {
                     if (place.isPictureAvialable() && !place.hasPictureDownloaded())
                         mEntityList.add(place);
                 }
+                // starting download icon images asynchronously.
                 downloadIcons(mEntityList);
 
             }
@@ -193,7 +206,7 @@ public class ListFragmentToDisplay extends Fragment {
 
 
     /**
-     * Helper method for loading icon images to ArrayList. This method is called from
+     * Helper method for loading icon images to ArrayList asynchronously. This method is called from
      * A) EntityListLoader Callback's onFinished method (when EntityList has been created)
      * B) ImageLoader Callback's onFinished method (when an Image instance has been downloaded)
      * The method takes the first Entity, passes it to ImageLoader. Then ImageLoader downloads
