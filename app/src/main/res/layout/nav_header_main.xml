@@ -17,13 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Budapest Tour Guide App"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:text="@string/budapest_tour_guide_app"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="horvath.csongor@outlook.com" />
+
 
 </LinearLayout>

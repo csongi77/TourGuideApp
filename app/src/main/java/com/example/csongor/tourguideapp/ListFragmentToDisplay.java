@@ -129,6 +129,7 @@ public class ListFragmentToDisplay extends Fragment {
                 Log.d(LOG_TAG, "-------------------------------------->LOAD FINISHED");
                 mArrayAdapter = new EntityListAdapter(getContext(), data);
                 mListView.setAdapter(mArrayAdapter);
+
                 mProgressBar.hide();
                 if (data.get(0) instanceof NullPlace) {
                     // if there were no results we show a message ("No results found")
