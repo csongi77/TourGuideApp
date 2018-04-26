@@ -22,8 +22,9 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
     // Maximum character number of Entity's description depending on Orientation
     private static final int PORTRAIT_DESCRIPTION_LENTGH = 40;
     private static final int LANDSCAPE_DESCRIPTION_LENTGH = 73;
-
+// todo override getitem
     private View mRootView;
+    private List<Entity> mEntityList;
 
     /**
      * Constructor
@@ -33,7 +34,9 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
      */
     public EntityListAdapter(@NonNull Context context, @NonNull List<Entity> entities) {
         super(context, R.layout.fragment_list_container, entities);
+        mEntityList=entities;
     }
+
 
     @NonNull
     @Override
@@ -98,5 +101,18 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
         ImageView icon = mRootView.findViewById(R.id.list_item_ic_image);
         icon.setImageBitmap(place.getIconImage());
         return mRootView;
+    }
+
+
+    /**
+     * Overriding default getItem in order to be able retrieve Entity object onItemClick event
+     * @param position - The item position in list
+     * @return - An Entity (Place or event)
+     */
+    @Nullable
+    @Override
+    public Entity getItem(int position) {
+        Entity toReturn=mEntityList.get(position);
+        return toReturn;
     }
 }

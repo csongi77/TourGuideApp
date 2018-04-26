@@ -167,7 +167,7 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
         Bitmap defaultImage, defaultIcon;
         Drawable d = getContext().getResources().getDrawable(R.drawable.ic_image_black_48dp);
         defaultIcon = ((BitmapDrawable) d).getBitmap();
-        defaultImage = defaultIcon;
+        defaultImage = ((BitmapDrawable) d).getBitmap();
         try {
             JSONArray baseArray = new JSONArray(jsonString);
             for (int i = 0; i < baseArray.length(); i++) {

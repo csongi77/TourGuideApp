@@ -20,4 +20,11 @@
     <string name="events">Events</string>
     <string name="sport">Sport</string>
     <string name="restaurants">Restaurants</string>
+    <string name="address">Address</string>
+    <string name="child_friendly">Child friendly: </string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="pets_allowed">Pets allowed: </string>
+    <string name="working_hours">Working hours: </string>
+    <string name="event_date">Event Date: </string>
 </resources>

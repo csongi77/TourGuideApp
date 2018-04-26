@@ -18,7 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class ImageLoader extends AsyncTaskLoader<Integer> {
+public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     // Declaring host and port here. If it's changed, it's easier to find here
     private static final String HOST = "http://csongi.sytes.net:";
     private static final String PORT = "8879";
@@ -33,6 +33,7 @@ public class ImageLoader extends AsyncTaskLoader<Integer> {
     // 0 if image type is icon, 1 if image type is image. We use this for optimizing code since
     // evaluation of conditionals take less computing in case of primitive types
     private int mImageIcon;
+    private Bitmap mBitmap;
 
     // Constructor of ImageLoader. We extract necessary variables from Bundle in order to
     // download appropriate image
@@ -51,45 +52,30 @@ public class ImageLoader extends AsyncTaskLoader<Integer> {
 
 
     /**
-     * Default async download process. When image has benn successfully downloaded, a new
-     * reference of Bitmap will be created in order to let this Loader get reused for another
-     * image download. We must
-     * 1) create new Bitmap
-     * 2) set the Bitmap to Entity
-     * 3) set PictureDownloaded to true
-     * synchronously because if image would set to Entity and Loader would be destroyed at this
-     * step then we should download image again because hasPictureDownloaded would remain false...
-     * @return - the Id of image
+     * Default async download process.
+     * @return - the downloaded Bitmap
      */
     @Nullable
     @Override
-    public Integer loadInBackground() {
-        Bitmap bitmap = null;
-        try {
-            URL url = new URL(HOST + PORT + PATH_PARAM + String.valueOf(mImageId) + "/"+mImageType+"/" + mResolution+"/");
-            URLConnection conn = url.openConnection();
-            InputStream stream = conn.getInputStream();
-            bitmap = BitmapFactory.decodeStream(stream);
-            stream.close();
-            synchronized (mLock) {
-                Bitmap newBitmap = Bitmap.createBitmap(bitmap);
-                if(mImageIcon==0) {
-                    mEntity.setIconImage(newBitmap);
-                    mEntity.setPictureDownloaded(true);
-                } else {
-                    mEntity.setImage(newBitmap);
-                }
+    public Bitmap loadInBackground() {
+        if(mBitmap==null) {
+            try {
+                URL url = new URL(HOST + PORT + PATH_PARAM + String.valueOf(mImageId) + "/" + mImageType + "/" + mResolution + "/");
+                URLConnection conn = url.openConnection();
+                InputStream stream = conn.getInputStream();
+                mBitmap = BitmapFactory.decodeStream(stream);
+                stream.close();
+                Log.d(LOG_TAG, "Image has been loaded. Image size=" + mBitmap.getByteCount()+
+                        ", resolution: " + mResolution + ", pixels: " + mBitmap.getHeight() + "x" + mBitmap.getWidth());
+            } catch (MalformedURLException e) {
+                Log.e(LOG_TAG, "URL error");
+                e.printStackTrace();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "OpenConnection Error");
+                e.printStackTrace();
             }
-            Log.d(LOG_TAG, "Image has been loaded. Image size=" + bitmap.getByteCount()+
-                    ", resolution: "+mResolution+", pixels: "+bitmap.getHeight()+"x"+bitmap.getWidth());
-        } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "URL error");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "OpenConnection Error");
-            e.printStackTrace();
         }
-        return this.getId();
+        return mBitmap;
     }
 
     /**

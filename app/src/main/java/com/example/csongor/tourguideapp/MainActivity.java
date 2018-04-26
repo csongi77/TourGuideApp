@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.AnimatorRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -24,6 +25,11 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String BUNDLE_SCREEN_RESOLUTION = "BUNDLE_SCREEN_RESOLUTION";
+
+    public String getmResolution() {
+        return mResolution;
+    }
+
     /**
      * variable for proper image and icon download. Possible values:
      * ldpi, mdpi, hdpi, xhdpi, xxhdpi and xxxhdpi
@@ -121,6 +127,7 @@ public class MainActivity extends AppCompatActivity
         bundleToSendToFragment.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
         if (id == R.id.historical_places) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.HISTORICAL_PLACES);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.commit();
         } else if (id == R.id.events) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.EVENTS);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
@@ -135,6 +143,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.commit();
         } else if (id == R.id.sports) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.SPORTS);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
@@ -142,6 +151,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.commit();
         } else if (id == R.id.restaurants) {
             mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.RESTAURANTS);
             historicalPlacesFragment.setArguments(bundleToSendToFragment);
@@ -159,7 +169,7 @@ public class MainActivity extends AppCompatActivity
         outState.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
         super.onSaveInstanceState(outState);
     }
-
+// todo make it a singleton class!!!
     /**
      * method for determining screen resolution in order to load appropriate image/icon size
      *
