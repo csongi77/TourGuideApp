@@ -12,10 +12,26 @@
         android:orientation="vertical">
 
         <!-- image container -->
-        <!-- The images and their origins:
-
-
-
+        <!-- The images and their origins by Entities:
+        Hungarian Parliament:
+            Készítette: Andrew Shiva / Wikipedia,
+            CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=43533008
+        Heroes' Square:
+            Készítette: User:Sveter (Please credit as "Petr Šmerkl, Wikipedia" in case you use this outside WMF projects.) - A feltöltő saját munkája,
+            CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=10705468
+        Castle of Vajdahunyad:
+            Készítette: User:Themightyquill - A feltöltő saját munkája,
+            CC BY-SA 2.5, https://commons.wikimedia.org/w/index.php?curid=1240510
+        Castle of Buda:
+            By Andrés Nieto Porras from Palma de Mallorca, España - 61/365²: Opulencia. Unidentified locations in Hungary. (Fake coords! This pic taken about two km away!),
+            CC BY-SA 2.0, https://commons.wikimedia.org/w/index.php?curid=24332305
+        Mathias Church:
+            Készítette: VinceB - A feltöltő saját munkája,
+            CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=18185884
+        Astral Projection LIVE:
+            CC0 -> https://www.pexels.com/photo/lights-party-dancing-music-2143/
+        Monkey Boulder:
+            from monkeyboulder.hu, with approval of owner
 
        -->
         <LinearLayout

@@ -11,7 +11,10 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
-
+<!-- image resource:
+Készítette: Katonams - A feltöltő saját munkája,
+CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=36609234
+-->
 
     <TextView
         android:layout_width="match_parent"
