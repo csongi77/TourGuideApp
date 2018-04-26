@@ -2,8 +2,6 @@
     <string name="app_name">TourGuideApp</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -11,8 +9,6 @@
     <string name="not_connected">Your device is unconnected. Make sure you have internet connection!</string>
     <string name="connection_parsing_error">Error connecting server or wrong JSON format was downloaded. Call the developer or the system administrator.</string>
 
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="no_results_found">No results found</string>
     <string name="budapest_tour_guide_app">Budapest Tour Guide App</string>
@@ -21,10 +17,19 @@
     <string name="sport">Sport</string>
     <string name="restaurants">Restaurants</string>
     <string name="address">Address</string>
+
+    <!-- Entity Details Fragment Strings -->
     <string name="child_friendly">Child friendly: </string>
-    <string name="yes">yes</string>
-    <string name="no">no</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="pets_allowed">Pets allowed: </string>
     <string name="working_hours">Working hours: </string>
     <string name="event_date">Event Date: </string>
+
+
+    <!-- List Item Strings -->
+    <string name="loremipsum_35">Lorem ipsum dolor sit amet, consect</string>
+    <string name="loremipsum_45">Lorem ipsum dolor sit amet, consectetuer adip</string>
+    <string name="loremipsum_25">Lorem ipsum dolor sit ame</string>
+
 </resources>

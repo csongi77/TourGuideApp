@@ -5,4 +5,18 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="o_dp">0dp</dimen>
+    <dimen name="layout_weight_1">1</dimen>
+
+
+    <!-- List Item values -->
+    <dimen name="list_item_img_width_height">64dp</dimen>
+    <dimen name="list_item_img_margin">6dp</dimen>
+    <dimen name="list_item_layout_padding">6dp</dimen>
+    <dimen name="list_item_txt_title_textsize">18sp</dimen>
+    <dimen name="list_item_txt_address_padding_top">6dp</dimen>
+    <dimen name="list_item_txt_address_textsize">14sp</dimen>
+    <dimen name="list_item_icon_layout_margin">6dp</dimen>
+
+
 </resources>
