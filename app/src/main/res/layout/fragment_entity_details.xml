@@ -12,6 +12,12 @@
         android:orientation="vertical">
 
         <!-- image container -->
+        <!-- The images and their origins:
+
+
+
+
+       -->
         <LinearLayout
             android:id="@+id/details_image_container"
             android:layout_width="match_parent"

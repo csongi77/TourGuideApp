@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.transition.Transition;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.util.Log;
@@ -181,14 +183,36 @@ public class ListFragmentToDisplay extends Fragment {
         // LOADER CALLBACKS end
         //------------------------------------------------------------------------------------------
 
-        // Loading Bundle arguments passed by MainActivity
         /*
-      The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
-      For possible values check @link{@BundleArgs}
-     */
+        Loading Bundle arguments passed by MainActivity
+        The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
+        For possible values check @link{@BundleArgs}
+        */
         Bundle mBundleFromActivity = getArguments();
         mCategoryId = mBundleFromActivity.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY);
         mResolution = ((MainActivity) getActivity()).getmResolution();
+
+        /**
+         * Setting up ToolBar Title based on category
+         */
+        switch (mCategoryId) {
+            case 1:
+                ((MainActivity) getActivity()).setTitle(getString(R.string.historical_places));
+                break;
+            case 2:
+                ((MainActivity) getActivity()).setTitle(getString(R.string.events));
+                break;
+            case 3:
+                ((MainActivity) getActivity()).setTitle(getString(R.string.sport));
+                break;
+            case 4:
+                ((MainActivity) getActivity()).setTitle(getString(R.string.restaurants));
+                break;
+            default:
+                ((MainActivity) getActivity()).setTitle(getString(R.string.app_name));
+                break;
+        }
+
         /**
          * getting LoaderManager.
          * If savedInstanceState is null, it means that this Fragment
