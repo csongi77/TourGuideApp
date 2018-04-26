@@ -5,18 +5,20 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical">
-
+    <!-- placeholder for detailed description with image -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- image container -->
         <LinearLayout
             android:id="@+id/details_image_container"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="@dimen/fragment_entity_details_image_height"
             android:orientation="horizontal">
 
+            <!-- progress bar. It's visilbe until download of the image is finished -->
             <android.support.v4.widget.ContentLoadingProgressBar
                 android:id="@+id/details_image_loader"
                 style="@style/Base.Widget.AppCompat.ProgressBar"
@@ -25,93 +27,123 @@
                 android:layout_gravity="center"
                 android:visibility="visible" />
 
+            <!-- image of Entity. It will become visible when download successfully finished -->
+            <!-- default image from material.io -->
             <ImageView
                 android:id="@+id/details_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_menu_gallery"
                 android:scaleType="centerCrop"
+                android:src="@drawable/ic_menu_gallery"
                 android:visibility="gone" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/details_txt_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/entity_title_style"
-            tools:text="Lorem ipsum dolor sit amet, consect" />
-
-        <TextView
-            android:id="@+id/details_txt_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis," />
-
+        <!-- placeholder of all text -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+            android:padding="@dimen/list_item_layout_padding"
+            android:orientation="vertical">
+            <!-- Title text view -->
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/details_txt_title"
+                style="@style/entity_title_style"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/address" />
+                tools:text="@string/loremipsum_35" />
 
+            <!-- Detailed description textview -->
             <TextView
-                android:id="@+id/details_txt_address"
-                android:layout_width="0dp"
+                android:id="@+id/details_txt_description"
+                style="@style/entity_description_style"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                tools:text="Lorem ipsum dolor sit amet, consectetuer adip" />
-        </LinearLayout>
+                tools:text="@string/loremipsum_255" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- placeholder for address -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/child_friendly" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/details_txt_children_friendly"
-                android:layout_width="0dp"
+                <!-- static Address text -->
+                <TextView
+                    style="@style/entity_address_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address" />
+
+                <!-- Address variable text -->
+                <TextView
+                    android:id="@+id/details_txt_address"
+                    style="@style/entity_description_style"
+                    android:layout_width="@dimen/o_dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/layout_weight_1"
+                    tools:text="@string/loremipsum_45" />
+            </LinearLayout>
+
+            <!-- Placeholder for ChildFriendly and PetsAllowed information -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/yes" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <!-- Child friendly static text -->
+                <TextView
+                    style="@style/entity_address_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/child_friendly" />
+
+                <!-- Child friendly variable -->
+                <TextView
+                    android:id="@+id/details_txt_children_friendly"
+                    style="@style/entity_description_style"
+                    android:layout_width="@dimen/o_dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/layout_weight_1"
+                    android:text="@string/yes" />
+
+                <!-- Pets allowed static text -->
+                <TextView
+                    style="@style/entity_address_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pets_allowed" />
+
+                <!-- Pets allowed variable -->
+                <TextView
+                    android:id="@+id/details_txt_pets_allowed"
+                    android:layout_width="@dimen/o_dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/layout_weight_1"
+                    android:text="@string/yes" />
+            </LinearLayout>
+
+            <!-- Working hours/date of event placeholder layout -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/pets_allowed" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/details_txt_pets_allowed"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/yes" />
-        </LinearLayout>
+                <!-- Working hours/date of event static text -->
+                <TextView
+                    android:id="@+id/details_txt_working_hours_or_event_date"
+                    style="@style/entity_address_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/working_hours" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/details_txt_working_hours_or_event_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/working_hours" />
-
-            <TextView
-                android:id="@+id/details_txt_working_hours"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                tools:text="Lorem ipsum dolor sit ame" />
+                <!-- Working hours/date of event variable -->
+                <TextView
+                    android:id="@+id/details_txt_working_hours"
+                    style="@style/entity_description_style"
+                    android:layout_width="@dimen/o_dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="@dimen/layout_weight_1"
+                    tools:text="Lorem ipsum dolor sit ame" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

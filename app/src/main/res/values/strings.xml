@@ -16,7 +16,7 @@
     <string name="events">Events</string>
     <string name="sport">Sport</string>
     <string name="restaurants">Restaurants</string>
-    <string name="address">Address</string>
+    <string name="address">Address: </string>
 
     <!-- Entity Details Fragment Strings -->
     <string name="child_friendly">Child friendly: </string>
@@ -31,5 +31,7 @@
     <string name="loremipsum_35">Lorem ipsum dolor sit amet, consect</string>
     <string name="loremipsum_45">Lorem ipsum dolor sit amet, consectetuer adip</string>
     <string name="loremipsum_25">Lorem ipsum dolor sit ame</string>
+    <string name="loremipsum_255">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,</string>
+
 
 </resources>

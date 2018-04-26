@@ -18,5 +18,9 @@
     <dimen name="list_item_txt_address_textsize">14sp</dimen>
     <dimen name="list_item_icon_layout_margin">6dp</dimen>
 
+    <!-- Entity details values -->
+    <dimen name="fragment_entity_details_image_height">180dp</dimen>
+
+
 
 </resources>
