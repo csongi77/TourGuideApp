@@ -69,6 +69,7 @@
                 <!-- static Address text -->
                 <TextView
                     style="@style/entity_address_style"
+                    android:paddingRight="@dimen/list_item_layout_padding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/address" />
@@ -92,6 +93,7 @@
                 <!-- Child friendly static text -->
                 <TextView
                     style="@style/entity_address_style"
+                    android:paddingRight="@dimen/list_item_layout_padding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/child_friendly" />
@@ -110,6 +112,7 @@
                     style="@style/entity_address_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingRight="@dimen/list_item_layout_padding"
                     android:text="@string/pets_allowed" />
 
                 <!-- Pets allowed variable -->
@@ -133,6 +136,7 @@
                     style="@style/entity_address_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingRight="@dimen/list_item_layout_padding"
                     android:text="@string/working_hours" />
 
                 <!-- Working hours/date of event variable -->

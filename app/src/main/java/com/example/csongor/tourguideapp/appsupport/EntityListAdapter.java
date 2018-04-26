@@ -22,7 +22,7 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
     // Maximum character number of Entity's description depending on Orientation
     private static final int PORTRAIT_DESCRIPTION_LENTGH = 40;
     private static final int LANDSCAPE_DESCRIPTION_LENTGH = 73;
-// todo override getitem
+    private static final int CATEGORY_EVENT = 2;
     private View mRootView;
     private List<Entity> mEntityList;
 
@@ -62,7 +62,9 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
 
         // cut Entities description - if it's too long - to appropriate value.
         TextView description = mRootView.findViewById(R.id.list_item_txt_description);
+        // the text length is depends on orientation.
         if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // if description text is longer than allowed, it will be cut and add "..."
             if (place.getDescription().length() > PORTRAIT_DESCRIPTION_LENTGH + 3) {
                 StringBuilder builder = new StringBuilder();
                 builder.append(place.getDescription().substring(0, PORTRAIT_DESCRIPTION_LENTGH))
@@ -71,7 +73,9 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
             } else {
                 description.setText(place.getDescription());
             }
+            // the landscape part comes here
         } else {
+            // if description text is longer than allowed, it will be cut and add "..."
             if (place.getDescription().length() > LANDSCAPE_DESCRIPTION_LENTGH + 3) {
                 StringBuilder builder = new StringBuilder();
                 builder.append(place.getDescription().substring(0, LANDSCAPE_DESCRIPTION_LENTGH))
@@ -90,16 +94,27 @@ public class EntityListAdapter extends ArrayAdapter<Entity> {
         } else {
             childFriendlyBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_allowed));
         }
+        // are pets allowed check. If not, change background color to red
         ImageView petsAllowed = mRootView.findViewById(R.id.list_item_icon_pets_allowed);
-
         GradientDrawable petsBackground = (GradientDrawable) petsAllowed.getBackground();
         if (!place.isPetAllowed()) {
             petsBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_prohibited));
         } else {
             petsBackground.setColor(ContextCompat.getColor(getContext(), R.color.color_allowed));
         }
+
+        // setting up default icon (from material.io). After list is downloaded, if Entity has
+        // available image other than default, it will be replaced
         ImageView icon = mRootView.findViewById(R.id.list_item_ic_image);
         icon.setImageBitmap(place.getIconImage());
+
+        // we have to change icon of working hours to schedule if Entity is an Event instance
+        ImageView dateTime=mRootView.findViewById(R.id.list_item_icon_time);
+        if(place.getCategoryId()==CATEGORY_EVENT){
+            dateTime.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_event_black_24dp));
+        } else {
+            dateTime.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_query_builder_black_24dp));
+        }
         return mRootView;
     }
 

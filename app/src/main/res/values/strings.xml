@@ -2,15 +2,16 @@
     <string name="app_name">TourGuideApp</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <!-- SnackBar messages -->
     <string name="not_connected">Your device is unconnected. Make sure you have internet connection!</string>
     <string name="connection_parsing_error">Error connecting server or wrong JSON format was downloaded. Call the developer or the system administrator.</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- message strings -->
     <string name="no_results_found">No results found</string>
+
+    <!-- Navigation Drawer and category items strings -->
     <string name="budapest_tour_guide_app">Budapest Tour Guide App</string>
     <string name="historical_places">Historical Places</string>
     <string name="events">Events</string>

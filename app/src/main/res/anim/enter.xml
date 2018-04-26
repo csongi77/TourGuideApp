@@ -2,7 +2,7 @@
  idea from StackOverflow: https://stackoverflow.com/questions/4817900/android-fragments-and-animation
  ?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa-->
 <set xmlns:android="http://schemas.android.com/apk/res/android">
- <translate
+    <translate
         android:duration="@android:integer/config_mediumAnimTime"
         android:fromXDelta="100%"
         android:interpolator="@android:anim/decelerate_interpolator"

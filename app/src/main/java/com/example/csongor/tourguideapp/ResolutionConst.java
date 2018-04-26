@@ -14,6 +14,9 @@ import static com.example.csongor.tourguideapp.ResolutionConst.XHDPI;
 import static com.example.csongor.tourguideapp.ResolutionConst.XXHDPI;
 import static com.example.csongor.tourguideapp.ResolutionConst.XXXHDPI;
 
+/**
+ * Instead Enums we create StringDef. These values has to be used for creating RESTful get URLs
+ */
 @Retention(RetentionPolicy.SOURCE)
 @StringDef({LDPI, MDPI, HDPI, XHDPI, XXHDPI, XXXHDPI, IMAGE, ICON})
 public @interface ResolutionConst {

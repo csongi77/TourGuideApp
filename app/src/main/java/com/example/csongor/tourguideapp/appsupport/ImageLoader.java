@@ -21,7 +21,7 @@ import java.net.URLConnection;
 public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     // Declaring host and port here. If it's changed, it's easier to find here
     private static final String HOST = "http://csongi.sytes.net:";
-    private static final String PORT = "8879";
+    private static final String PORT = "45454";
     private static final String PATH_PARAM = "/tourguide/q/image/";
     private static final String LOG_TAG = EntityLoader.class.getSimpleName();
     private static final Object mLock = new Object();

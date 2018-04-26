@@ -41,11 +41,6 @@ public class ListFragmentToDisplay extends Fragment {
     private ContentLoadingProgressBar mProgressBar;
     private ListView mListView;
     private TextView mMessage;
-    /**
-     * The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
-     * For possible values check @link{@BundleArgs}
-     */
-    private Bundle mBundleFromActivity;
     private @BundleArgs
     int mCategoryId;
     private @BundleStringArgs
@@ -53,7 +48,6 @@ public class ListFragmentToDisplay extends Fragment {
     private LoaderManager mLoaderManager;
     private Loader<List<Entity>> mEntityLoader;
     private Loader<Bitmap> mImageLoader;
-    private LoaderManager.LoaderCallbacks<List<Entity>> mEntityListLoaderCallback;
     private LoaderManager.LoaderCallbacks<Bitmap> mImageLoaderCallback;
     private ArrayAdapter<Entity> mArrayAdapter;
     private List<Entity> mEntityListWithImages, mEntityList;
@@ -100,6 +94,7 @@ public class ListFragmentToDisplay extends Fragment {
                  */
                 if (mEntityListWithImages != null && !mEntityListWithImages.isEmpty()) {
                     if (data != null) {
+                        // sychronized steps in order to avoid data loss (for example at orientation change)
                         synchronized (mLock) {
                             Bitmap bitmapToSet = Bitmap.createBitmap(data);
                             Entity entity = mEntityListWithImages.remove(0);
@@ -111,7 +106,6 @@ public class ListFragmentToDisplay extends Fragment {
                         // removing 0th element regardless data was null in order to avoid infinite loop
                         mEntityListWithImages.remove(0);
                     }
-
                 }
                 downloadIcons(mEntityListWithImages);
             }
@@ -123,7 +117,7 @@ public class ListFragmentToDisplay extends Fragment {
         };
 
         // Entity Loader Callbacks
-        mEntityListLoaderCallback = new LoaderManager.LoaderCallbacks<List<Entity>>() {
+        LoaderManager.LoaderCallbacks<List<Entity>> mEntityListLoaderCallback = new LoaderManager.LoaderCallbacks<List<Entity>>() {
             @NonNull
             @Override
             public Loader<List<Entity>> onCreateLoader(int id, @Nullable Bundle args) {
@@ -188,7 +182,11 @@ public class ListFragmentToDisplay extends Fragment {
         //------------------------------------------------------------------------------------------
 
         // Loading Bundle arguments passed by MainActivity
-        mBundleFromActivity = getArguments();
+        /*
+      The mBundleCategory contains the required categoryId which was passed by NavigationDrawer
+      For possible values check @link{@BundleArgs}
+     */
+        Bundle mBundleFromActivity = getArguments();
         mCategoryId = mBundleFromActivity.getInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY);
         mResolution = ((MainActivity) getActivity()).getmResolution();
         /**

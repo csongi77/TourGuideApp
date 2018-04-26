@@ -13,6 +13,7 @@ import static com.example.csongor.tourguideapp.BundleStringArgs.BUNDLE_RESOLUTIO
 
 /**
  * These Annotations are defining String constants for passing values from Activity to Fragment.
+ * We use this to avoid Enums
  */
 @Retention(RetentionPolicy.SOURCE)
 @StringDef({BUNDLE_ENTITY_CATEGORY, BUNDLE_PARCELABLE_ENTITY_ARRAY_LIST, BUNDLE_ENTITY, BUNDLE_RESOLUTION, BUNDLE_IMAGE_TYPE})

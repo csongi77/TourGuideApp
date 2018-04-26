@@ -70,7 +70,7 @@ public interface Entity extends Parcelable {
 
     /**
      * Is picture and icon available on server. If no picture is available, only the
-     * substitute icon/picture will used from Drawable resources.
+     * substitute icon/picture will used from Drawable resources (from material.io).
      * @return - true if there are icon and picture is available in multiple resolutions on the
      * server, false in any other case
      */

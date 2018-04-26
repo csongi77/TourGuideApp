@@ -36,7 +36,7 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
 
     // Declaring host and port here. If it's changed, it's easier to find here
     private static final String HOST = "http://csongi.sytes.net:";
-    private static final String PORT = "8879";
+    private static final String PORT = "45454";
     private static final String PATH_PARAM = "/tourguide/q/entities/placelist/";
     private static final String LOG_TAG = EntityLoader.class.getSimpleName();
     /**
@@ -169,6 +169,7 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
         defaultIcon = ((BitmapDrawable) d).getBitmap();
         defaultImage = ((BitmapDrawable) d).getBitmap();
         try {
+            // parsing JSON array and creating Entities
             JSONArray baseArray = new JSONArray(jsonString);
             for (int i = 0; i < baseArray.length(); i++) {
                 JSONObject entityObject = (JSONObject) baseArray.get(i);

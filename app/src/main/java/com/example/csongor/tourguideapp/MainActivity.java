@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity
     private @ResolutionConst
     String mResolution;
     private FragmentManager mFragmentManager;
-    private FragmentTransaction mFragmentTransaction;
 
 
     @Override
@@ -80,6 +79,8 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * On Back pressed, if Drawer is opened, it will be closed.
+     * If Drawer is closed we check are there any Fragment in BackStack.
+     * If there is, we pop it out. Else we use default onBackPressed method
      */
     @Override
     public void onBackPressed() {
@@ -123,13 +124,21 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        // Put screen resolution into Bundle and the Category of Entity, too
+        /**
+         * Handle navigation view item clicks here.
+         * Put Entity Category into Bundle.
+         * At every conditional we:
+         * 1) start a new Fragment Transaction
+         * 2) set an animation for Fragment
+         * 3) create a new instance of List Fragment
+         * 4) set the fresh bundle to it
+         * 5) replace old Fragment and commit
+          */
         int id = item.getItemId();
         Bundle bundleToSendToFragment=new Bundle();
-        bundleToSendToFragment.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
+        FragmentTransaction mFragmentTransaction;
         if (id == R.id.historical_places) {
-            mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction =mFragmentManager.beginTransaction();
             mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.HISTORICAL_PLACES);
@@ -137,7 +146,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.events) {
-            mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction =mFragmentManager.beginTransaction();
             mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.EVENTS);
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.sports) {
-            mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction =mFragmentManager.beginTransaction();
             mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.SPORTS);
@@ -153,7 +162,7 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         } else if (id == R.id.restaurants) {
-            mFragmentTransaction=mFragmentManager.beginTransaction();
+            mFragmentTransaction =mFragmentManager.beginTransaction();
             mFragmentTransaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
             Fragment historicalPlacesFragment=new ListFragmentToDisplay();
             bundleToSendToFragment.putInt(BundleStringArgs.BUNDLE_ENTITY_CATEGORY,BundleArgs.RESTAURANTS);
@@ -161,8 +170,8 @@ public class MainActivity extends AppCompatActivity
             mFragmentTransaction.replace(R.id.fragment_container,historicalPlacesFragment);
             mFragmentTransaction.commit();
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // Afterwards we close the Drawer Layout
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -172,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         outState.putString(BundleStringArgs.BUNDLE_RESOLUTION,mResolution);
         super.onSaveInstanceState(outState);
     }
-// todo make it a singleton class!!!
+
     /**
      * method for determining screen resolution in order to load appropriate image/icon size
      *

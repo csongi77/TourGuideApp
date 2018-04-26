@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- In anim resource folder we hold Fragment animation tranlations
+ idea from StackOverflow: https://stackoverflow.com/questions/4817900/android-fragments-and-animation
+ ?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa-->
 <translate
     android:fromXDelta="-100%"
     android:toXDelta="0"

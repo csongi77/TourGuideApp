@@ -3,35 +3,33 @@
     android:id="@+id/fragment_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white"
-    >
+    android:orientation="vertical">
 
 
-
+    <!-- message to show in case of NullEntity result -->
     <TextView
         android:id="@+id/fragment_root_txt_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/no_results_found"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:text="@string/no_results_found"
+        android:visibility="gone" />
 
+    <!-- list items placeholder -->
     <ListView
         android:id="@+id/list_view_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:visibility="gone"/>
 
-    </ListView>
-
-
+    <!-- progress bar which is shown while downloading data -->
     <android.support.v4.widget.ContentLoadingProgressBar
         android:id="@+id/list_view_loading_progress_bar"
+        style="@style/Base.Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        style="@style/Base.Widget.AppCompat.ProgressBar"
         android:layout_gravity="center"
         android:visibility="visible" />
 
