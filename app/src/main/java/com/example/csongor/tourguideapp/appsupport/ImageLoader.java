@@ -14,6 +14,7 @@ import com.example.csongor.tourguideapp.ResolutionConst;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -59,9 +60,13 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
     @Override
     public Bitmap loadInBackground() {
         if(mBitmap==null) {
+            HttpURLConnection conn=null;
             try {
                 URL url = new URL(HOST + PORT + PATH_PARAM + String.valueOf(mImageId) + "/" + mImageType + "/" + mResolution + "/");
-                URLConnection conn = url.openConnection();
+                conn = (HttpURLConnection)url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(15*1000);
+                conn.setReadTimeout(20*1000);
                 InputStream stream = conn.getInputStream();
                 mBitmap = BitmapFactory.decodeStream(stream);
                 stream.close();
@@ -73,6 +78,8 @@ public class ImageLoader extends AsyncTaskLoader<Bitmap> {
             } catch (IOException e) {
                 Log.e(LOG_TAG, "OpenConnection Error");
                 e.printStackTrace();
+            } finally {
+                if(conn!=null) conn.disconnect();
             }
         }
         return mBitmap;
