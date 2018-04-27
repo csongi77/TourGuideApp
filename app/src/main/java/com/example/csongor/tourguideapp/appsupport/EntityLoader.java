@@ -126,6 +126,8 @@ public class EntityLoader extends AsyncTaskLoader<List<Entity>> {
             URL url = new URL(path);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(15*1000);
+            connection.setReadTimeout(20*1000);
             InputStreamReader stream = new InputStreamReader(connection.getInputStream());
             BufferedReader reader = new BufferedReader(stream);
             String toRead = reader.readLine();
